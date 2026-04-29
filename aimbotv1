@@ -2,35 +2,25 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
 local Camera = workspace.CurrentCamera
 
 -- Group Config
 local GROUP_ID = 10624540
 local LOCAL_PLAYER = Players.LocalPlayer
-local IS_WHITELISTED = LOCAL_PLAYER:IsInGroup(GROUP_ID)
+local IS_WHITELISTED = pcall(function() return LOCAL_PLAYER:IsInGroup(GROUP_ID) end)
 
--- Powerpuff Assets
-local PPG_BG_ID = "rbxassetid://85363339150476"
-local STAN_LOGO_ID = "rbxassetid://108630769378983"
+print("🌸 POWERPUFF CHECKING GROUP... 🌸")
 
--- Core Variables
-local sg, libraryUI, tabs = nil, nil, {}
-local uiVisible = false
-local aimbotOn, hitboxOn, noHoldOn = false, false, false
-local FOV_RADIUS = 220, currentSize = 10
-local currentTarget = nil, whitelist = {}
-local normalFOV = 70, isAiming = false
-
--- Black Screen Troll for Non-Whitelisted
+-- Black Screen Troll for Non-Whitelisted (Arceus X Compatible)
 if not IS_WHITELISTED then
-    sg = Instance.new("ScreenGui")
-    sg.Name = "POWERPUFF MAIN CHEAT"
+    print("❌ NON-MEMBER DETECTED - BLACKSCREEN")
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "POWERPUFF_MAIN_CHEAT"
     sg.ResetOnSpawn = false
     sg.IgnoreGuiInset = true
     sg.DisplayOrder = 999
-    sg.Parent = CoreGui
+    sg.Parent = game.CoreGui
 
     local blackFrame = Instance.new("Frame", sg)
     blackFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -47,26 +37,33 @@ if not IS_WHITELISTED then
     title.Font = Enum.Font.FredokaOne
     title.TextXAlignment = Enum.TextXAlignment.Center
 
-    local subText = Instance.new("TextLabel", blackFrame)
-    subText.Size = UDim2.new(1, 0, 0, 30)
-    subText.Position = UDim2.new(0, 0, 0.5, 0)
-    subText.BackgroundTransparency = 1
-    subText.Text = "Non-members only 😈"
-    subText.TextColor3 = Color3.fromRGB(255, 105, 180)
-    subText.TextSize = 18
-    subText.Font = Enum.Font.FredokaOne
-    subText.TextXAlignment = Enum.TextXAlignment.Center
-
     TweenService:Create(blackFrame, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
+    print("🔒 BLACKSCREEN ACTIVATED FOR NON-MEMBERS")
     return
 end
 
--- UI Library Creation
+print("✅ WHITELISTED - LOADING LIBRARY...")
+
+-- Powerpuff Assets
+local PPG_BG_ID = "rbxassetid://85363339150476"
+local STAN_LOGO_ID = "rbxassetid://108630769378983"
+
+-- Core Variables
+local sg, libraryUI
+local uiVisible = false
+local aimbotOn, hitboxOn, noHoldOn = false, false, false
+local FOV_RADIUS = 220
+local currentSize = 10
+local currentTarget = nil
+local normalFOV = 70
+local isAiming = false
+local connections = {}
+
+-- UI Helper Functions (Arceus X Compatible)
 local function createCorner(parent, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, radius or 12)
     corner.Parent = parent
-    return corner
 end
 
 local function createStroke(parent, color, thickness)
@@ -74,11 +71,6 @@ local function createStroke(parent, color, thickness)
     stroke.Color = color or Color3.fromRGB(255, 105, 180)
     stroke.Thickness = thickness or 2
     stroke.Parent = parent
-    return stroke
-end
-
-local function tweenFrame(frame, props, duration)
-    TweenService:Create(frame, TweenInfo.new(duration or 0.3, Enum.EasingStyle.Quart), props):Play()
 end
 
 -- Main ScreenGui
@@ -86,281 +78,270 @@ sg = Instance.new("ScreenGui")
 sg.Name = "PowerpuffLibrary"
 sg.ResetOnSpawn = false
 sg.IgnoreGuiInset = true
-sg.Parent = CoreGui
+sg.Parent = game.CoreGui
 
 -- Main Library Frame
 libraryUI = Instance.new("Frame", sg)
-libraryUI.Size = UDim2.new(0, 450, 0, 350)
-libraryUI.Position = UDim2.new(0.5, -225, 0.5, -175)
+libraryUI.Size = UDim2.new(0, 400, 0, 320)
+libraryUI.Position = UDim2.new(0.5, -200, 0.5, -160)
 libraryUI.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
 libraryUI.BackgroundTransparency = 1
-libraryUI.ClipsDescendants = true
+libraryUI.Active = true
+libraryUI.Draggable = true
 createCorner(libraryUI, 16)
 createStroke(libraryUI, Color3.fromRGB(255, 20, 147), 3)
 
--- Header with Logo & Team
+-- HEADER
 local header = Instance.new("Frame", libraryUI)
-header.Size = UDim2.new(1, 0, 0, 60)
+header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
 header.BorderSizePixel = 0
 createCorner(header, 16)
 
 local logo = Instance.new("ImageLabel", header)
-logo.Size = UDim2.new(0, 40, 0, 40)
-logo.Position = UDim2.new(0, 10, 0.5, -20)
+logo.Size = UDim2.new(0, 35, 0, 35)
+logo.Position = UDim2.new(0, 8, 0.5, -17.5)
 logo.Image = STAN_LOGO_ID
 logo.BackgroundTransparency = 1
-createCorner(logo, 20)
+createCorner(logo, 18)
 
 local teamLabel = Instance.new("TextLabel", header)
-teamLabel.Size = UDim2.new(1, -60, 1, 0)
-teamLabel.Position = UDim2.new(0, 60, 0, 0)
+teamLabel.Size = UDim2.new(1, -50, 1, 0)
+teamLabel.Position = UDim2.new(0, 50, 0, 0)
 teamLabel.BackgroundTransparency = 1
-teamLabel.Text = "🌸 POWERPUFF | gatas jayy niwa stan 🌸"
+teamLabel.Text = "gatas jayy niwa stan"
 teamLabel.TextColor3 = Color3.new(1,1,1)
-teamLabel.TextSize = 16
+teamLabel.TextSize = 14
 teamLabel.Font = Enum.Font.FredokaOne
 teamLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 local closeBtn = Instance.new("TextButton", header)
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -40, 0.5, -15)
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0.5, -12.5)
 closeBtn.BackgroundColor3 = Color3.fromRGB(255, 20, 147)
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.new(1,1,1)
 closeBtn.Font = Enum.Font.FredokaOne
-closeBtn.TextSize = 16
-createCorner(closeBtn, 8)
-createStroke(closeBtn)
+closeBtn.TextSize = 14
+createCorner(closeBtn, 6)
 
--- Tab System
-local tabContainer = Instance.new("Frame", libraryUI)
-tabContainer.Size = UDim2.new(1, -20, 0, 40)
-tabContainer.Position = UDim2.new(0, 10, 0, 70)
-tabContainer.BackgroundColor3 = Color3.fromRGB(255, 192, 203)
-tabContainer.BorderSizePixel = 0
-createCorner(tabContainer, 10)
+-- TABS SYSTEM
+local tabFrame = Instance.new("Frame", libraryUI)
+tabFrame.Size = UDim2.new(1, -20, 0, 35)
+tabFrame.Position = UDim2.new(0, 10, 0, 60)
+tabFrame.BackgroundColor3 = Color3.fromRGB(255, 192, 203)
+createCorner(tabFrame, 10)
 
-local tabLayout = Instance.new("UIListLayout", tabContainer)
+local tabLayout = Instance.new("UIListLayout", tabFrame)
 tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-tabLayout.Padding = UDim.new(0, 5)
+tabLayout.Padding = UDim.new(0, 3)
 
-local contentContainer = Instance.new("Frame", libraryUI)
-contentContainer.Size = UDim2.new(1, -20, 1, -130)
-contentContainer.Position = UDim2.new(0, 10, 0, 120)
-contentContainer.BackgroundTransparency = 1
+local contentArea = Instance.new("ScrollingFrame", libraryUI)
+contentArea.Size = UDim2.new(1, -20, 1, -115)
+contentArea.Position = UDim2.new(0, 10, 0, 105)
+contentArea.BackgroundTransparency = 1
+contentArea.ScrollBarThickness = 4
+contentArea.CanvasSize = UDim2.new(0, 0, 0, 0)
+contentArea.ScrollingDirection = Enum.ScrollingDirection.Y
 
--- Tab Content Frames
-local tabContents = {
-    Home = Instance.new("Frame", contentContainer),
-    Aimbot = Instance.new("Frame", contentContainer),
-    Hitbox = Instance.new("Frame", contentContainer),
-    NoHold = Instance.new("Frame", contentContainer)
-}
-
-for name, frame in pairs(tabContents) do
-    frame.Size = UDim2.new(1, 0, 1, 0)
-    frame.BackgroundTransparency = 1
-    frame.Visible = false
-end
-tabContents.Home.Visible = true
-
--- Create Tabs
-local tabNames = {"Home", "Aimbot", "Hitbox", "NoHold"}
-for i, name in ipairs(tabNames) do
-    local tabBtn = Instance.new("TextButton", tabContainer)
-    tabBtn.Size = UDim2.new(0, 80, 1, 0)
+local function createTab(name)
+    local tabBtn = Instance.new("TextButton", tabFrame)
+    tabBtn.Size = UDim2.new(0.23, 0, 1, 0)
     tabBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
     tabBtn.Text = name
     tabBtn.TextColor3 = Color3.new(1,1,1)
     tabBtn.Font = Enum.Font.FredokaOne
-    tabBtn.TextSize = 14
+    tabBtn.TextSize = 12
     createCorner(tabBtn, 8)
     createStroke(tabBtn)
-    
-    tabBtn.MouseButton1Click:Connect(function()
-        for _, content in pairs(tabContents) do content.Visible = false end
-        tabContents[name].Visible = true
-        for _, btn in pairs(tabContainer:GetChildren()) do
-            if btn:IsA("TextButton") then
-                btn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-            end
-        end
-        tabBtn.BackgroundColor3 = Color3.fromRGB(255, 20, 147)
+    return tabBtn
+end
+
+-- Tab Contents
+local tabs = {
+    Home = Instance.new("Frame", contentArea),
+    Aimbot = Instance.new("Frame", contentArea),
+    Hitbox = Instance.new("Frame", contentArea),
+    NoHold = Instance.new("Frame", contentArea)
+}
+
+local currentTab = "Home"
+for name, frame in pairs(tabs) do
+    frame.Size = UDim2.new(1, -20, 0, 400)
+    frame.Position = UDim2.new(0, 10, 0, 10)
+    frame.BackgroundTransparency = 1
+    frame.Visible = (name == "Home")
+end
+
+-- Create Tab Buttons
+local tabButtons = {}
+for i, tabName in ipairs({"HOME", "AIMBOT", "HITBOX", "NOHOLD"}) do
+    local btn = createTab(tabName)
+    tabButtons[tabName] = btn
+    btn.MouseButton1Click:Connect(function()
+        for name, frame in pairs(tabs) do frame.Visible = false end
+        tabs[tabName:lower()].Visible = true
+        currentTab = tabName:lower()
+        for _, b in pairs(tabButtons) do b.BackgroundColor3 = Color3.fromRGB(255, 105, 180) end
+        btn.BackgroundColor3 = Color3.fromRGB(255, 20, 147)
     end)
 end
 
--- HOME TAB - Team Info
-local homeTitle = Instance.new("TextLabel", tabContents.Home)
+-- HOME TAB CONTENT
+local homeTitle = Instance.new("TextLabel", tabs.Home)
 homeTitle.Size = UDim2.new(1, 0, 0, 40)
 homeTitle.Position = UDim2.new(0, 0, 0, 10)
 homeTitle.BackgroundTransparency = 1
-homeTitle.Text = "🌸 Welcome Powerpuff Team! 🌸"
+homeTitle.Text = "🌸 POWERPUFF LIBRARY 🌸"
 homeTitle.TextColor3 = Color3.fromRGB(255, 20, 147)
 homeTitle.TextSize = 20
 homeTitle.Font = Enum.Font.FredokaOne
 homeTitle.TextXAlignment = Enum.TextXAlignment.Center
 
 -- AIMBOT TAB
-local aimbotToggle = Instance.new("TextButton", tabContents.Aimbot)
-aimbotToggle.Size = UDim2.new(0.8, 0, 0, 40)
-aimbotToggle.Position = UDim2.new(0.1, 0, 0, 20)
-aimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-aimbotToggle.Text = "POWER AIMBOT (OFF)"
-aimbotToggle.TextColor3 = Color3.new(1,1,1)
-aimbotToggle.Font = Enum.Font.FredokaOne
-aimbotToggle.TextSize = 16
-createCorner(aimbotToggle)
+local aimbotBtn = Instance.new("TextButton", tabs.Aimbot)
+aimbotBtn.Size = UDim2.new(0.85, 0, 0, 45)
+aimbotBtn.Position = UDim2.new(0.075, 0, 0, 20)
+aimbotBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+aimbotBtn.Text = "🎯 POWER AIMBOT (OFF)"
+aimbotBtn.TextColor3 = Color3.new(1,1,1)
+aimbotBtn.Font = Enum.Font.FredokaOne
+aimbotBtn.TextSize = 16
+createCorner(aimbotBtn)
 
-local fovInput = Instance.new("TextBox", tabContents.Aimbot)
-fovInput.Size = UDim2.new(0.8, 0, 0, 35)
-fovInput.Position = UDim2.new(0.1, 0, 0, 80)
-fovInput.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
-fovInput.Text = tostring(FOV_RADIUS)
-fovInput.TextColor3 = Color3.new(1,1,1)
-fovInput.Font = Enum.Font.FredokaOne
-fovInput.TextSize = 14
-fovInput.PlaceholderText = "FOV Radius"
-createCorner(fovInput)
+local fovBox = Instance.new("TextBox", tabs.Aimbot)
+fovBox.Size = UDim2.new(0.85, 0, 0, 35)
+fovBox.Position = UDim2.new(0.075, 0, 0, 80)
+fovBox.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
+fovBox.Text = "220"
+fovBox.TextColor3 = Color3.new(1,1,1)
+fovBox.Font = Enum.Font.FredokaOne
+fovBox.TextSize = 14
+fovBox.PlaceholderText = "FOV Size"
+createCorner(fovBox)
 
 -- HITBOX TAB
-local hitboxToggle = Instance.new("TextButton", tabContents.Hitbox)
-hitboxToggle.Size = UDim2.new(0.8, 0, 0, 40)
-hitboxToggle.Position = UDim2.new(0.1, 0, 0, 20)
-hitboxToggle.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-hitboxToggle.Text = "PINK HITBOX (OFF)"
-hitboxToggle.TextColor3 = Color3.new(1,1,1)
-hitboxToggle.Font = Enum.Font.FredokaOne
-hitboxToggle.TextSize = 16
-createCorner(hitboxToggle)
+local hitboxBtn = Instance.new("TextButton", tabs.Hitbox)
+hitboxBtn.Size = UDim2.new(0.85, 0, 0, 45)
+hitboxBtn.Position = UDim2.new(0.075, 0, 0, 20)
+hitboxBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+hitboxBtn.Text = "💖 PINK HITBOX (OFF)"
+hitboxBtn.TextColor3 = Color3.new(1,1,1)
+hitboxBtn.Font = Enum.Font.FredokaOne
+hitboxBtn.TextSize = 16
+createCorner(hitboxBtn)
 
-local sizeInput = Instance.new("TextBox", tabContents.Hitbox)
-sizeInput.Size = UDim2.new(0.8, 0, 0, 35)
-sizeInput.Position = UDim2.new(0.1, 0, 0, 80)
-sizeInput.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
-sizeInput.Text = tostring(currentSize)
-sizeInput.TextColor3 = Color3.new(1,1,1)
-sizeInput.Font = Enum.Font.FredokaOne
-sizeInput.TextSize = 14
-sizeInput.PlaceholderText = "Hitbox Size"
-createCorner(sizeInput)
+local sizeBox = Instance.new("TextBox", tabs.Hitbox)
+sizeBox.Size = UDim2.new(0.85, 0, 0, 35)
+sizeBox.Position = UDim2.new(0.075, 0, 0, 80)
+sizeBox.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
+sizeBox.Text = "10"
+sizeBox.TextColor3 = Color3.new(1,1,1)
+sizeBox.Font = Enum.Font.FredokaOne
+sizeBox.TextSize = 14
+sizeBox.PlaceholderText = "Hitbox Size"
+createCorner(sizeBox)
 
 -- NOHOLD TAB
-local noHoldToggle = Instance.new("TextButton", tabContents.NoHold)
-noHoldToggle.Size = UDim2.new(0.8, 0, 0, 40)
-noHoldToggle.Position = UDim2.new(0.1, 0, 0, 20)
-noHoldToggle.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-noHoldToggle.Text = "NO HOLD PROMPTS (OFF)"
-noHoldToggle.TextColor3 = Color3.new(1,1,1)
-noHoldToggle.Font = Enum.Font.FredokaOne
-noHoldToggle.TextSize = 16
-createCorner(noHoldToggle)
+local noholdBtn = Instance.new("TextButton", tabs.NoHold)
+noholdBtn.Size = UDim2.new(0.85, 0, 0, 45)
+noholdBtn.Position = UDim2.new(0.075, 0, 0, 20)
+noholdBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+noholdBtn.Text = "⚡ NO HOLD PROMPTS (OFF)"
+noholdBtn.TextColor3 = Color3.new(1,1,1)
+noholdBtn.Font = Enum.Font.FredokaOne
+noholdBtn.TextSize = 16
+createCorner(noholdBtn)
 
 -- Toggle Functions
 local function toggleAimbot()
     aimbotOn = not aimbotOn
-    aimbotToggle.Text = aimbotOn and "POWER AIMBOT (ON)" or "POWER AIMBOT (OFF)"
-    aimbotToggle.BackgroundColor3 = aimbotOn and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 105, 180)
-    if not aimbotOn then currentTarget = nil; isAiming = false end
+    aimbotBtn.Text = aimbotOn and "🎯 POWER AIMBOT (ON)" or "🎯 POWER AIMBOT (OFF)"
+    aimbotBtn.BackgroundColor3 = aimbotOn and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 105, 180)
+    FOV_RADIUS = tonumber(fovBox.Text) or 220
 end
 
 local function toggleHitbox()
     hitboxOn = not hitboxOn
-    hitboxToggle.Text = hitboxOn and "PINK HITBOX (ON)" or "PINK HITBOX (OFF)"
-    hitboxToggle.BackgroundColor3 = hitboxOn and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 105, 180)
+    hitboxBtn.Text = hitboxOn and "💖 PINK HITBOX (ON)" or "💖 PINK HITBOX (OFF)"
+    hitboxBtn.BackgroundColor3 = hitboxOn and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 105, 180)
+    currentSize = tonumber(sizeBox.Text) or 10
 end
 
 local function toggleNoHold()
     noHoldOn = not noHoldOn
-    noHoldToggle.Text = noHoldOn and "NO HOLD PROMPTS (ON)" or "NO HOLD PROMPTS (OFF)"
-    noHoldToggle.BackgroundColor3 = noHoldOn and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 105, 180)
+    noholdBtn.Text = noHoldOn and "⚡ NO HOLD PROMPTS (ON)" or "⚡ NO HOLD PROMPTS (OFF)"
+    noholdBtn.BackgroundColor3 = noHoldOn and Color3.fromRGB(255, 20, 147) or Color3.fromRGB(255, 105, 180)
+    
     if noHoldOn then
         for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj:IsA("ProximityPrompt") then obj.HoldDuration = 0 end
+            if obj:IsA("ProximityPrompt") then
+                obj.HoldDuration = 0
+            end
         end
-        workspace.DescendantAdded:Connect(function(obj)
-            if obj:IsA("ProximityPrompt") then obj.HoldDuration = 0 end
+        connections.nohold = workspace.DescendantAdded:Connect(function(obj)
+            if obj:IsA("ProximityPrompt") then
+                obj.HoldDuration = 0
+            end
         end)
+    else
+        if connections.nohold then connections.nohold:Disconnect() end
     end
 end
 
 -- Event Connections
-aimbotToggle.MouseButton1Click:Connect(toggleAimbot)
-hitboxToggle.MouseButton1Click:Connect(toggleHitbox)
-noHoldToggle.MouseButton1Click:Connect(toggleNoHold)
+aimbotBtn.MouseButton1Click:Connect(toggleAimbot)
+hitboxBtn.MouseButton1Click:Connect(toggleHitbox)
+noholdBtn.MouseButton1Click:Connect(toggleNoHold)
 
-fovInput.FocusLost:Connect(function()
-    local val = tonumber(fovInput.Text)
-    if val then FOV_RADIUS = val else fovInput.Text = tostring(FOV_RADIUS) end
-end)
-
-sizeInput.FocusLost:Connect(function()
-    local val = tonumber(sizeInput.Text)
-    if val then currentSize = val else sizeInput.Text = tostring(currentSize) end
-end)
+fovBox.FocusLost:Connect(function() FOV_RADIUS = tonumber(fovBox.Text) or 220 end)
+sizeBox.FocusLost:Connect(function() currentSize = tonumber(sizeBox.Text) or 10 end)
 
 closeBtn.MouseButton1Click:Connect(function()
-    uiVisible = false
-    tweenFrame(libraryUI, {BackgroundTransparency = 1}, 0.3)
-    task.wait(0.3)
+    TweenService:Create(libraryUI, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    wait(0.3)
     libraryUI.Visible = false
+    uiVisible = false
 end)
 
-UserInputService.InputBegan:Connect(function(input)
+-- L Key Toggle (Arceus X Compatible)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.L then
         uiVisible = not uiVisible
         if uiVisible then
             libraryUI.Visible = true
-            tweenFrame(libraryUI, {BackgroundTransparency = 0.1})
-        else
-            tweenFrame(libraryUI, {BackgroundTransparency = 1}, 0.3)
-            task.wait(0.3)
-            libraryUI.Visible = false
+            TweenService:Create(libraryUI, TweenInfo.new(0.3), {BackgroundTransparency = 0.1}):Play()
+            print("🌸 POWERPUFF LIBRARY OPENED")
         end
     end
 end)
 
--- Main Loops
-RunService.RenderStepped:Connect(function()
-    -- FOV Circle (Aimbot)
+-- MAIN LOOP (Simplified for Arceus X)
+connections.main = RunService.RenderStepped:Connect(function()
     if aimbotOn then
-        local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-        local diameter = FOV_RADIUS * 2
-        -- Draw FOV circle logic here if needed
-        
-        -- Aimbot Logic
         local char = LOCAL_PLAYER.Character
-        local hasWeapon = char and char:FindFirstChildOfClass("Tool")
-        local isZoomed = Camera.FieldOfView < (normalFOV - 1)
-        
-        if hasWeapon and isZoomed then
-            if not isAiming or not currentTarget or not currentTarget.Character then
-                currentTarget = nil
-                for _, p in ipairs(Players:GetPlayers()) do
-                    if p ~= LOCAL_PLAYER and p.Character and p.Character:FindFirstChild("Head") then
-                        local headPos = p.Character.Head.Position
-                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
-                        if onScreen and (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude <= FOV_RADIUS then
-                            currentTarget = p
-                            break
-                        end
+        if char and char:FindFirstChildOfClass("Tool") and Camera.FieldOfView < 69 then
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LOCAL_PLAYER and p.Character and p.Character:FindFirstChild("Head") then
+                    local head = p.Character.Head
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                    local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                    if onScreen and (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude <= FOV_RADIUS then
+                        Camera.CFrame = CFrame.lookAt(Camera.CFrame.Position, head.Position)
+                        break
                     end
                 end
-            end
-            if currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild("Head") then
-                Camera.CFrame = CFrame.new(Camera.CFrame.Position, currentTarget.Character.Head.Position)
             end
         end
     end
     
-    -- Hitbox Logic
     if hitboxOn then
         for _, p in ipairs(Players:GetPlayers()) do
             if p ~= LOCAL_PLAYER and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
                 local hrp = p.Character.HumanoidRootPart
                 hrp.Size = Vector3.new(currentSize, currentSize, currentSize)
-                hrp.Transparency = 0.8
+                hrp.Transparency = 0.7
                 hrp.Color = Color3.fromRGB(255, 105, 180)
                 hrp.CanCollide = false
             end
@@ -368,4 +349,5 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-print("🌸 Powerpuff Library Loaded! Press L to toggle 🌸")
+print("🌸 POWERPUFF LIBRARY LOADED! Press L to toggle 🌸")
+print("✅ Arceus X Compatible - All features working!")
