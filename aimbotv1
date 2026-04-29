@@ -549,7 +549,7 @@ end
 local storagePage = tabPages["📦  Storage"]
 
 -- section label
-local storageTitle = label(storagePage, "🔫  GLOCK-17 KEYBINDS", 12, PINK, Enum.Font.GothamBold, {
+local storageTitle = label(storagePage, "", 12, PINK, Enum.Font.GothamBold, {
     Size = UDim2.new(0.9,0,0,20),
     TextXAlignment = Enum.TextXAlignment.Left,
 })
@@ -613,13 +613,13 @@ saveRow.AutoButtonColor  = false
 saveRow.Parent           = keybindCard
 corner(saveRow, 8)
 
-local hintL = label(storagePage, IS_MOBILE and "Tap KUWA/TAGO to rebind" or "Press L to toggle UI  •  Rebind by clicking key buttons", 10, Color3.fromRGB(160,80,130), Enum.Font.Gotham, {
+local hintL = label(storagePage, IS_MOBILE and "Tap KUWA/TAGO to rebind" or "", 10, Color3.fromRGB(160,80,130), Enum.Font.Gotham, {
     Size = UDim2.new(0.9,0,0,16),
     TextXAlignment = Enum.TextXAlignment.Left,
 })
 
 -- ── PROXIMITY PROMPT SECTION ──
-local ppTitle = label(storagePage, "⚡  PROXIMITY PROMPT", 12, PINK, Enum.Font.GothamBold, {
+local ppTitle = label(storagePage, "", 12, PINK, Enum.Font.GothamBold, {
     Size = UDim2.new(0.9,0,0,20),
     TextXAlignment = Enum.TextXAlignment.Left,
 })
