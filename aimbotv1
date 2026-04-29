@@ -11,6 +11,11 @@ local Players= game:GetService("Players")
 local Run    = game:GetService("RunService")
 
 -- ════════════════════════════
+--  ARCEUS X / EXECUTOR FIX
+-- ════════════════════════════
+local safeGui = (typeof(gethui) == "function") and gethui() or CoreGui
+
+-- ════════════════════════════
 --  CONFIG
 -- ════════════════════════════
 local GROUP_ID   = 10624540
@@ -46,7 +51,7 @@ if not IS_WHITELISTED then
     tsg.ResetOnSpawn  = false
     tsg.IgnoreGuiInset= true
     tsg.DisplayOrder  = 999
-    tsg.Parent        = CoreGui
+    tsg.Parent        = safeGui
 
     local black = Instance.new("Frame")
     black.Size                   = UDim2.new(1,0,1,0)
@@ -173,10 +178,11 @@ end
 --  MAIN SCREENGUI
 -- ════════════════════════════
 local sg = Instance.new("ScreenGui")
-sg.Name         = "PPG_Hub"
-sg.ResetOnSpawn = false
+sg.Name           = "PPG_Hub"
+sg.ResetOnSpawn   = false
 sg.IgnoreGuiInset = true
-sg.Parent       = CoreGui
+sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+sg.Parent         = safeGui
 
 -- ════════════════════════════
 --  MOBILE TOGGLE BUTTON
@@ -234,11 +240,50 @@ win.Position          = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)
 win.BackgroundColor3  = DARK_BG
 win.BorderSizePixel   = 0
 win.Active            = true
-win.Draggable         = not IS_MOBILE
-win.Visible           = false
+win.Visible           = true   -- visible agad sa execute
 win.Parent            = sg
 corner(win, 14)
 stroke(win, PINK, 2)
+
+-- ── MANUAL DRAG (Draggable broken sa executors) ──
+do
+    local dragging, dragInput, dragStart, startPos2
+    local function update(input)
+        local delta = input.Position - dragStart
+        win.Position = UDim2.new(
+            startPos2.X.Scale, startPos2.X.Offset + delta.X,
+            startPos2.Y.Scale, startPos2.Y.Offset + delta.Y
+        )
+    end
+    -- drag hook attached to titleBar later (after titleBar is created)
+    task.defer(function()
+        if not win or not win.Parent then return end
+        local tb = win:FindFirstChild("TitleBar", true)
+        if not tb then return end
+        tb.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+                dragging  = true
+                dragStart = input.Position
+                startPos2 = win.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+        tb.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+        UIS.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then update(input) end
+        end)
+    end)
+end
 
 -- gradient overlay
 local grad = Instance.new("UIGradient")
@@ -251,6 +296,7 @@ grad.Parent   = win
 
 -- ── TITLE BAR ──
 local titleBar = Instance.new("Frame")
+titleBar.Name             = "TitleBar"
 titleBar.Size             = UDim2.new(1,0,0,48)
 titleBar.BackgroundColor3 = DEEP_PINK
 titleBar.BorderSizePixel  = 0
@@ -671,7 +717,7 @@ end)
 -- ════════════════════════════
 --  TOGGLE UI VISIBILITY
 -- ════════════════════════════
-local uiVisible = false
+local uiVisible = true  -- starts visible
 
 local function toggleUI()
     uiVisible = not uiVisible
