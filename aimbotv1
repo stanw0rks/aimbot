@@ -1,56 +1,45 @@
-local UIS    = game:GetService("UserInputService")
-local RS     = game:GetService("ReplicatedStorage")
-local TS     = game:GetService("TweenService")
-local CoreGui= game:GetService("CoreGui")
-local Players= game:GetService("Players")
-local Run    = game:GetService("RunService")
+local UIS     = game:GetService("UserInputService")
+local RS      = game:GetService("ReplicatedStorage")
+local TS      = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local Run     = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
 
-local safeGui = (typeof(gethui) == "function") and gethui() or CoreGui
+local safeGui = (typeof(gethui)=="function") and gethui() or CoreGui
+local LP      = Players.LocalPlayer
 
--- ════════════════════════════
---  CONFIG
--- ════════════════════════════
-local GROUP_ID   = 10624540
-local STAN_LOGO  = "rbxassetid://108630769378983"
-local MEMBERS    = { "GATAS", "NIWA", "JAYY", "STAN" }
+local GROUP_ID  = 10624540
+local STAN_LOGO = "rbxassetid://108630769378983"
 
-local PINK       = Color3.fromRGB(255, 105, 180)
-local DEEP_PINK  = Color3.fromRGB(220, 50,  140)
-local LIGHT_PINK = Color3.fromRGB(255, 182, 213)
-local DARK_BG    = Color3.fromRGB(30,  15,  25)
-local CARD_BG    = Color3.fromRGB(45,  20,  38)
-local WHITE      = Color3.fromRGB(255, 255, 255)
+local PINK       = Color3.fromRGB(255,105,180)
+local DEEP_PINK  = Color3.fromRGB(220,50,140)
+local LIGHT_PINK = Color3.fromRGB(255,182,213)
+local DARK_BG    = Color3.fromRGB(30,15,25)
+local CARD_BG    = Color3.fromRGB(45,20,38)
+local WHITE      = Color3.fromRGB(255,255,255)
 
-local binds = { hide = Enum.KeyCode.H, show = Enum.KeyCode.J }
+local binds  = { hide = Enum.KeyCode.H, show = Enum.KeyCode.J }
+local IS_MOB = UIS.TouchEnabled and not UIS.KeyboardEnabled
 
--- ════════════════════════════
---  DEVICE DETECT
--- ════════════════════════════
-local IS_MOBILE = UIS.TouchEnabled and not UIS.KeyboardEnabled
+-- ══════════════════════════════════════
+--  GROUP CHECK
+-- ══════════════════════════════════════
+local IS_MEMBER = LP:IsInGroup(GROUP_ID)
 
--- ════════════════════════════
---  PLAYER & WHITELIST CHECK
--- ════════════════════════════
-local LP = Players.LocalPlayer
-local IS_WHITELISTED = LP:IsInGroup(GROUP_ID)
-
--- ════════════════════════════
---  TROLL SCREEN (non-member)
--- ════════════════════════════
-if not IS_WHITELISTED then
+if not IS_MEMBER then
     local tsg = Instance.new("ScreenGui")
-    tsg.Name          = "POWERPUFF MAIN CHEAT"
-    tsg.ResetOnSpawn  = false
-    tsg.IgnoreGuiInset= true
-    tsg.DisplayOrder  = 999
-    tsg.Parent        = safeGui
+    tsg.Name           = "POWERPUFF MAIN CHEAT"
+    tsg.ResetOnSpawn   = false
+    tsg.IgnoreGuiInset = true
+    tsg.DisplayOrder   = 9999
+    tsg.Parent         = safeGui
 
     local black = Instance.new("Frame")
     black.Size                   = UDim2.new(1,0,1,0)
     black.BackgroundColor3       = Color3.new(0,0,0)
     black.BackgroundTransparency = 1
     black.BorderSizePixel        = 0
-    black.ZIndex                 = 999
+    black.ZIndex                 = 9999
     black.Parent                 = tsg
 
     local txt1 = Instance.new("TextLabel")
@@ -63,7 +52,7 @@ if not IS_WHITELISTED then
     txt1.Font                = Enum.Font.GothamBold
     txt1.TextXAlignment      = Enum.TextXAlignment.Center
     txt1.TextTransparency    = 1
-    txt1.ZIndex              = 1000
+    txt1.ZIndex              = 10000
     txt1.Parent              = black
 
     local txt2 = Instance.new("TextLabel")
@@ -76,99 +65,108 @@ if not IS_WHITELISTED then
     txt2.Font                = Enum.Font.Gotham
     txt2.TextXAlignment      = Enum.TextXAlignment.Center
     txt2.TextTransparency    = 1
-    txt2.ZIndex              = 1000
+    txt2.ZIndex              = 10000
     txt2.Parent              = black
 
-    -- Pink progress bar
     local barBg = Instance.new("Frame")
     barBg.Size             = UDim2.new(0,240,0,6)
     barBg.Position         = UDim2.new(0.5,-120,0.6,0)
     barBg.BackgroundColor3 = Color3.fromRGB(60,20,50)
     barBg.BorderSizePixel  = 0
-    barBg.ZIndex           = 1001
+    barBg.ZIndex           = 10001
     barBg.Parent           = black
-    local bc = Instance.new("UICorner") bc.CornerRadius=UDim.new(1,0) bc.Parent=barBg
+    local _c1 = Instance.new("UICorner") _c1.CornerRadius=UDim.new(1,0) _c1.Parent=barBg
 
     local bar = Instance.new("Frame")
     bar.Size             = UDim2.new(0,0,1,0)
     bar.BackgroundColor3 = PINK
     bar.BorderSizePixel  = 0
-    bar.ZIndex           = 1002
+    bar.ZIndex           = 10002
     bar.Parent           = barBg
-    local bc2 = Instance.new("UICorner") bc2.CornerRadius=UDim.new(1,0) bc2.Parent=bar
+    local _c2 = Instance.new("UICorner") _c2.CornerRadius=UDim.new(1,0) _c2.Parent=bar
 
-    TS:Create(black, TweenInfo.new(1, Enum.EasingStyle.Quart), { BackgroundTransparency = 0 }):Play()
+    TS:Create(black, TweenInfo.new(1,Enum.EasingStyle.Quart), {BackgroundTransparency=0}):Play()
     task.delay(1.2, function()
-        TS:Create(txt1, TweenInfo.new(0.4), { TextTransparency = 0 }):Play()
-        TS:Create(txt2, TweenInfo.new(0.4), { TextTransparency = 0 }):Play()
-        TS:Create(bar, TweenInfo.new(3.5, Enum.EasingStyle.Quad), { Size = UDim2.new(1,0,1,0) }):Play()
+        TS:Create(txt1, TweenInfo.new(0.4), {TextTransparency=0}):Play()
+        TS:Create(txt2, TweenInfo.new(0.4), {TextTransparency=0}):Play()
+        TS:Create(bar,  TweenInfo.new(3.5,Enum.EasingStyle.Quad), {Size=UDim2.new(1,0,1,0)}):Play()
     end)
-
     task.delay(1.6, function()
-        local dots = 0
-        local msgs = {
-            "Loading modules",
-            "Injecting scripts",
-            "Bypassing anti-cheat",
-            "Connecting to server",
-            "Finalizing...",
-        }
-        local i = 1
+        local msgs = {"Loading modules","Injecting scripts","Bypassing anti-cheat","Connecting to server","Finalizing..."}
+        local i,d = 1,0
         while black and black.Parent do
-            dots = (dots % 3) + 1
-            txt2.Text = msgs[i] .. string.rep(".", dots)
+            d = (d%3)+1
+            txt2.Text = msgs[i]..string.rep(".",d)
             task.wait(0.55)
-            if dots == 3 then
-                i = (i % #msgs) + 1
-            end
+            if d==3 then i=(i%#msgs)+1 end
         end
     end)
-
-    return -- stop here for non-members
+    return
 end
 
--- ════════════════════════════
---  MEMBERS ONLY BELOW
--- ════════════════════════════
+-- ══════════════════════════════════════
+--  HELPERS
+-- ══════════════════════════════════════
 local Inventory = RS:WaitForChild("Storage"):WaitForChild("Inventory")
 
--- ════════════════════════════
---  HELPERS
--- ════════════════════════════
-local function corner(p, r)
+local function mkCorner(p, r)
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, r or 8)
-    c.Parent = l
+    c.Parent = p
     return c
 end
 
-local function stroke(p, col, thick)
+local function mkStroke(p, col, thick)
     local s = Instance.new("UIStroke")
     s.Color     = col   or PINK
     s.Thickness = thick or 1.5
-    s.Parent    = l
+    s.Parent    = p
     return s
 end
 
-local function tween(obj, props, t, style)
+local function tw(obj, props, t, style)
     TS:Create(obj, TweenInfo.new(t or 0.2, style or Enum.EasingStyle.Quart), props):Play()
 end
 
-local function label(parent, text, size, color, font, props)
+local function mkLabel(parent, text, size, color, font, props)
     local l = Instance.new("TextLabel")
     l.BackgroundTransparency = 1
-    l.Text      = text
-    l.TextSize  = size  or 12
-    l.TextColor3= color or WHITE
-    l.Font      = font  or Enum.Font.GothamSemibold
-    l.Parent    = parent
+    l.Text       = text
+    l.TextSize   = size  or 12
+    l.TextColor3 = color or WHITE
+    l.Font       = font  or Enum.Font.GothamSemibold
+    l.Parent     = parent
     if props then for k,v in pairs(props) do l[k]=v end end
     return l
 end
 
--- ════════════════════════════
---  MAIN SCREENGUI
--- ════════════════════════════
+local function mkDrag(frame, handle)
+    handle = handle or frame
+    local drag, dragIn, mPos, fPos = false,nil,nil,nil
+    handle.InputBegan:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+            drag=true mPos=i.Position fPos=frame.Position
+            i.Changed:Connect(function()
+                if i.UserInputState==Enum.UserInputState.End then drag=false end
+            end)
+        end
+    end)
+    handle.InputChanged:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch then
+            dragIn=i
+        end
+    end)
+    UIS.InputChanged:Connect(function(i)
+        if i==dragIn and drag then
+            local d=i.Position-mPos
+            frame.Position=UDim2.new(fPos.X.Scale,fPos.X.Offset+d.X,fPos.Y.Scale,fPos.Y.Offset+d.Y)
+        end
+    end)
+end
+
+-- ══════════════════════════════════════
+--  SCREEN GUI
+-- ══════════════════════════════════════
 local sg = Instance.new("ScreenGui")
 sg.Name           = "PPG_Hub"
 sg.ResetOnSpawn   = false
@@ -176,11 +174,11 @@ sg.IgnoreGuiInset = true
 sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 sg.Parent         = safeGui
 
--- ════════════════════════════
---  MOBILE TOGGLE BUTTON
--- ════════════════════════════
+-- ══════════════════════════════════════
+--  MOBILE BUTTON
+-- ══════════════════════════════════════
 local mobileBtn
-if IS_MOBILE then
+if IS_MOB then
     mobileBtn = Instance.new("TextButton")
     mobileBtn.Size             = UDim2.new(0,50,0,50)
     mobileBtn.Position         = UDim2.new(0,12,0.5,-25)
@@ -192,110 +190,45 @@ if IS_MOBILE then
     mobileBtn.AutoButtonColor  = false
     mobileBtn.ZIndex           = 50
     mobileBtn.Parent           = sg
-    corner(mobileBtn, 25)
-    stroke(mobileBtn, WHITE, 2)
-
-    -- draggable
-    local dragging, dragStart, startPos = false, nil, nil
-    mobileBtn.InputBegan:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.Touch then
-            dragging  = true
-            dragStart = inp.Position
-            startPos  = mobileBtn.Position
-        end
-    end)
-    UIS.InputChanged:Connect(function(inp)
-        if dragging and inp.UserInputType == Enum.UserInputType.Touch then
-            local delta = inp.Position - dragStart
-            mobileBtn.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    UIS.InputEnded:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
-    end)
+    mkCorner(mobileBtn, 25)
+    mkStroke(mobileBtn, WHITE, 2)
+    mkDrag(mobileBtn, mobileBtn)
 end
 
--- ════════════════════════════
+-- ══════════════════════════════════════
 --  MAIN WINDOW
--- ════════════════════════════
-local WIN_W, WIN_H = 360, 420
+-- ══════════════════════════════════════
+local WIN_W, WIN_H = 360, 440
 
 local win = Instance.new("Frame")
-win.Name              = "Window"
-win.Size              = UDim2.new(0, WIN_W, 0, WIN_H)
-win.Position          = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)
-win.BackgroundColor3  = DARK_BG
-win.BorderSizePixel   = 0
-win.Active            = true
-win.Visible           = false   -- visible agad sa execute
-win.Parent            = sg
-corner(win, 14)
-stroke(win, PINK, 2)
+win.Name             = "Window"
+win.Size             = UDim2.new(0,WIN_W,0,WIN_H)
+win.Position         = UDim2.new(0.5,-WIN_W/2,0.5,-WIN_H/2)
+win.BackgroundColor3 = DARK_BG
+win.BorderSizePixel  = 0
+win.Active           = true
+win.Visible          = true
+win.Parent           = sg
+mkCorner(win, 14)
+mkStroke(win, PINK, 2)
 
--- ── MANUAL DRAG (Draggable broken sa executors) ──
-do
-    local dragging, dragInput, dragStart, startPos2
-    local function update(input)
-        local delta = input.Position - dragStart
-        win.Position = UDim2.new(
-            startPos2.X.Scale, startPos2.X.Offset + delta.X,
-            startPos2.Y.Scale, startPos2.Y.Offset + delta.Y
-        )
-    end
-    -- drag hook attached to titleBar later (after titleBar is created)
-    task.defer(function()
-        if not win or not win.Parent then return end
-        local tb = win:FindFirstChild("TitleBar", true)
-        if not tb then return end
-        tb.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.Touch then
-                dragging  = true
-                dragStart = input.Position
-                startPos2 = win.Position
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragging = false
-                    end
-                end)
-            end
-        end)
-        tb.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement
-            or input.UserInputType == Enum.UserInputType.Touch then
-                dragInput = input
-            end
-        end)
-        UIS.InputChanged:Connect(function(input)
-            if input == dragInput and dragging then update(input) end
-        end)
-    end)
-end
-
--- gradient overlay
-local grad = Instance.new("UIGradient")
-grad.Color    = ColorSequence.new({
-    ColorSequenceKeypoint.new(0,   Color3.fromRGB(50, 15, 40)),
-    ColorSequenceKeypoint.new(1,   Color3.fromRGB(20, 8,  18)),
+local winGrad = Instance.new("UIGradient")
+winGrad.Color    = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(50,15,40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20,8,18)),
 })
-grad.Rotation = 120
-grad.Parent   = win
+winGrad.Rotation = 120
+winGrad.Parent   = win
 
--- ── TITLE BAR ──
+-- ── TITLE BAR ──────────────────────────
 local titleBar = Instance.new("Frame")
 titleBar.Name             = "TitleBar"
 titleBar.Size             = UDim2.new(1,0,0,48)
 titleBar.BackgroundColor3 = DEEP_PINK
 titleBar.BorderSizePixel  = 0
 titleBar.Parent           = win
-corner(titleBar, 14)
+mkCorner(titleBar, 14)
 
--- crop bottom corners of titlebar
 local titleCrop = Instance.new("Frame")
 titleCrop.Size             = UDim2.new(1,0,0,14)
 titleCrop.Position         = UDim2.new(0,0,1,-14)
@@ -311,7 +244,7 @@ titleGrad.Color    = ColorSequence.new({
 titleGrad.Rotation = 90
 titleGrad.Parent   = titleBar
 
-local titleLbl = label(titleBar, "🌸  POWERPUFF", 15, WHITE, Enum.Font.GothamBold, {
+mkLabel(titleBar, "🌸  POWERPUFF MAIN CHEAT", 14, WHITE, Enum.Font.GothamBold, {
     Size = UDim2.new(1,-50,1,0),
     Position = UDim2.new(0,16,0,0),
     TextXAlignment = Enum.TextXAlignment.Left,
@@ -327,137 +260,176 @@ closeBtn.TextSize         = 13
 closeBtn.Font             = Enum.Font.GothamBold
 closeBtn.AutoButtonColor  = false
 closeBtn.Parent           = titleBar
-corner(closeBtn, 6)
+mkCorner(closeBtn, 6)
 
--- mobile drag on titlebar
-if IS_MOBILE then
-    local dragActive, dragStart2, winStart = false, nil, nil
-    titleBar.InputBegan:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.Touch then
-            dragActive = true
-            dragStart2 = inp.Position
-            winStart   = win.Position
-        end
-    end)
-    UIS.InputChanged:Connect(function(inp)
-        if dragActive and inp.UserInputType == Enum.UserInputType.Touch then
-            local d = inp.Position - dragStart2
-            win.Position = UDim2.new(
-                winStart.X.Scale, winStart.X.Offset + d.X,
-                winStart.Y.Scale, winStart.Y.Offset + d.Y
-            )
-        end
-    end)
-    UIS.InputEnded:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.Touch then dragActive = false end
-    end)
-end
+mkDrag(win, titleBar)
 
--- ── TAB BAR ──
+-- ── TAB BAR ────────────────────────────
 local tabBar = Instance.new("Frame")
 tabBar.Size             = UDim2.new(1,-16,0,34)
 tabBar.Position         = UDim2.new(0,8,0,54)
 tabBar.BackgroundColor3 = CARD_BG
 tabBar.BorderSizePixel  = 0
 tabBar.Parent           = win
-corner(tabBar, 8)
+mkCorner(tabBar, 8)
 
 local tabLayout = Instance.new("UIListLayout")
-tabLayout.FillDirection  = Enum.FillDirection.Horizontal
+tabLayout.FillDirection       = Enum.FillDirection.Horizontal
 tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 tabLayout.VerticalAlignment   = Enum.VerticalAlignment.Center
-tabLayout.Padding        = UDim.new(0, 4)
-tabLayout.Parent         = tabBar
+tabLayout.Padding             = UDim.new(0,4)
+tabLayout.Parent              = tabBar
 
 local tabPad = Instance.new("UIPadding")
 tabPad.PaddingLeft  = UDim.new(0,4)
 tabPad.PaddingRight = UDim.new(0,4)
 tabPad.Parent       = tabBar
 
--- ── CONTENT AREA ──
+-- ── CONTENT AREA ───────────────────────
 local contentArea = Instance.new("Frame")
 contentArea.Size             = UDim2.new(1,-16,1,-100)
 contentArea.Position         = UDim2.new(0,8,0,96)
 contentArea.BackgroundColor3 = CARD_BG
 contentArea.BorderSizePixel  = 0
 contentArea.Parent           = win
-corner(contentArea, 10)
+mkCorner(contentArea, 10)
 
--- ════════════════════════════
+-- ══════════════════════════════════════
 --  TAB SYSTEM
--- ════════════════════════════
-local tabs       = {}
-local tabPages   = {}
-local activeTab  = nil
-
-local TAB_DEFS = { "🏠  Home", "📦  Storage" }
+--  To add a new tab: AddTab("🔧  MyTab")
+--  then access:      getPage("🔧  MyTab")
+-- ══════════════════════════════════════
+local tabBtns  = {}
+local tabPages = {}
+local activeTab = nil
 
 local function switchTab(name)
     for n, page in pairs(tabPages) do
         page.Visible = (n == name)
     end
-    for n, btn in pairs(tabs) do
+    for n, btn in pairs(tabBtns) do
         if n == name then
-            tween(btn, { BackgroundColor3 = DEEP_PINK, TextColor3 = WHITE }, 0.15)
+            tw(btn, {BackgroundColor3=DEEP_PINK,  TextColor3=WHITE},      0.15)
         else
-            tween(btn, { BackgroundColor3 = Color3.fromRGB(55,25,45), TextColor3 = LIGHT_PINK }, 0.15)
+            tw(btn, {BackgroundColor3=Color3.fromRGB(55,25,45), TextColor3=LIGHT_PINK}, 0.15)
         end
     end
     activeTab = name
 end
 
-for _, tabName in ipairs(TAB_DEFS) do
+local function AddTab(name)
     local tb = Instance.new("TextButton")
-    tb.Size             = UDim2.new(0, 108, 0, 26)
+    tb.Size             = UDim2.new(0,108,0,26)
     tb.BackgroundColor3 = Color3.fromRGB(55,25,45)
-    tb.Text             = tabName
+    tb.Text             = name
     tb.TextColor3       = LIGHT_PINK
     tb.TextSize         = 11
     tb.Font             = Enum.Font.GothamSemibold
     tb.AutoButtonColor  = false
     tb.Parent           = tabBar
-    corner(tb, 6)
+    mkCorner(tb, 6)
 
     local page = Instance.new("ScrollingFrame")
-    page.Size               = UDim2.new(1,0,1,0)
+    page.Size                = UDim2.new(1,0,1,0)
     page.BackgroundTransparency = 1
-    page.BorderSizePixel    = 0
-    page.ScrollBarThickness = 3
-    page.ScrollBarImageColor3 = PINK
-    page.CanvasSize         = UDim2.new(0,0,0,0)
-    page.AutomaticCanvasSize= Enum.AutomaticSize.Y
-    page.Visible            = false
-    page.Parent             = contentArea
+    page.BorderSizePixel     = 0
+    page.ScrollBarThickness  = 3
+    page.ScrollBarImageColor3= PINK
+    page.CanvasSize          = UDim2.new(0,0,0,0)
+    page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    page.Visible             = false
+    page.Parent              = contentArea
 
-    local pageLayout = Instance.new("UIListLayout")
-    pageLayout.Padding          = UDim.new(0,8)
-    pageLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    pageLayout.Parent           = page
+    local layout = Instance.new("UIListLayout")
+    layout.Padding              = UDim.new(0,8)
+    layout.HorizontalAlignment  = Enum.HorizontalAlignment.Center
+    layout.Parent               = page
 
-    local pagePad = Instance.new("UIPadding")
-    pagePad.PaddingTop    = UDim.new(0,10)
-    pagePad.PaddingBottom = UDim.new(0,10)
-    pagePad.Parent        = page
+    local pad = Instance.new("UIPadding")
+    pad.PaddingTop    = UDim.new(0,10)
+    pad.PaddingBottom = UDim.new(0,10)
+    pad.Parent        = page
 
-    tabs[tabName]     = tb
-    tabPages[tabName] = page
+    tabBtns[name]  = tb
+    tabPages[name] = page
 
-    tb.MouseButton1Click:Connect(function() switchTab(tabName) end)
+    tb.MouseButton1Click:Connect(function() switchTab(name) end)
+
+    if not activeTab then switchTab(name) end
+    return page
 end
 
--- ════════════════════════════
---  HOME TAB
--- ════════════════════════════
-local homePage = tabPages["🏠  Home"]
+local function getPage(name)
+    return tabPages[name]
+end
 
--- Stan logo card
+-- ══════════════════════════════════════
+--  ELEMENT HELPERS
+-- ══════════════════════════════════════
+local function addSectionLabel(page, text)
+    return mkLabel(page, text, 11, PINK, Enum.Font.GothamBold, {
+        Size = UDim2.new(0.9,0,0,20),
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+end
+
+local function addToggleCard(page, labelText, onToggle)
+    local on = false
+
+    local card = Instance.new("Frame")
+    card.Size             = UDim2.new(0.9,0,0,52)
+    card.BackgroundColor3 = Color3.fromRGB(50,18,40)
+    card.BorderSizePixel  = 0
+    card.Parent           = page
+    mkCorner(card, 12)
+    mkStroke(card, PINK, 1.5)
+
+    mkLabel(card, labelText, 12, LIGHT_PINK, Enum.Font.GothamSemibold, {
+        Size = UDim2.new(0.6,0,1,0),
+        Position = UDim2.new(0,14,0,0),
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    local togBtn = Instance.new("TextButton")
+    togBtn.Size             = UDim2.new(0,80,0,28)
+    togBtn.Position         = UDim2.new(1,-90,0.5,-14)
+    togBtn.BackgroundColor3 = Color3.fromRGB(80,25,60)
+    togBtn.Text             = "OFF"
+    togBtn.TextColor3       = LIGHT_PINK
+    togBtn.TextSize         = 12
+    togBtn.Font             = Enum.Font.GothamBold
+    togBtn.AutoButtonColor  = false
+    togBtn.Parent           = card
+    mkCorner(togBtn, 8)
+    mkStroke(togBtn, PINK, 1)
+
+    togBtn.MouseButton1Click:Connect(function()
+        on = not on
+        if on then
+            tw(togBtn, {BackgroundColor3=DEEP_PINK, TextColor3=WHITE}, 0.15)
+            togBtn.Text = "ON"
+        else
+            tw(togBtn, {BackgroundColor3=Color3.fromRGB(80,25,60), TextColor3=LIGHT_PINK}, 0.15)
+            togBtn.Text = "OFF"
+        end
+        task.spawn(onToggle, on)
+    end)
+
+    return togBtn
+end
+
+-- ══════════════════════════════════════
+--  HOME TAB
+-- ══════════════════════════════════════
+local homePage = AddTab("🏠  Home")
+
 local logoCard = Instance.new("Frame")
 logoCard.Size             = UDim2.new(0.9,0,0,100)
 logoCard.BackgroundColor3 = Color3.fromRGB(55,20,45)
 logoCard.BorderSizePixel  = 0
 logoCard.Parent           = homePage
-corner(logoCard, 12)
-stroke(logoCard, PINK, 1.5)
+mkCorner(logoCard, 12)
+mkStroke(logoCard, PINK, 1.5)
 
 local logoImg = Instance.new("ImageLabel")
 logoImg.Size              = UDim2.new(0,72,0,72)
@@ -466,40 +438,34 @@ logoImg.BackgroundTransparency = 1
 logoImg.Image             = STAN_LOGO
 logoImg.ScaleType         = Enum.ScaleType.Fit
 logoImg.Parent            = logoCard
-corner(logoImg, 8)
+mkCorner(logoImg, 8)
 
--- glow ring around logo
 local ring = Instance.new("Frame")
 ring.Size             = UDim2.new(0,80,0,80)
 ring.Position         = UDim2.new(0.5,-40,0.5,-40)
 ring.BackgroundTransparency = 1
 ring.BorderSizePixel  = 0
 ring.Parent           = logoCard
-corner(ring, 40)
-stroke(ring, PINK, 2.5)
+mkCorner(ring, 40)
+mkStroke(ring, PINK, 2.5)
 
--- animate ring
 task.spawn(function()
     while logoCard and logoCard.Parent do
-        tween(ring, {Size=UDim2.new(0,84,0,84), Position=UDim2.new(0.5,-42,0.5,-42)}, 0.9, Enum.EasingStyle.Sine)
+        tw(ring, {Size=UDim2.new(0,86,0,86), Position=UDim2.new(0.5,-43,0.5,-43)}, 0.9, Enum.EasingStyle.Sine)
         task.wait(0.9)
-        tween(ring, {Size=UDim2.new(0,78,0,78), Position=UDim2.new(0.5,-39,0.5,-39)}, 0.9, Enum.EasingStyle.Sine)
+        tw(ring, {Size=UDim2.new(0,78,0,78), Position=UDim2.new(0.5,-39,0.5,-39)}, 0.9, Enum.EasingStyle.Sine)
         task.wait(0.9)
     end
 end)
 
--- members section label
-local membersTitle = label(homePage, "  MEMBERS", 12, PINK, Enum.Font.GothamBold, {
-    Size = UDim2.new(0.9,0,0,20),
-    TextXAlignment = Enum.TextXAlignment.Left,
-})
+addSectionLabel(homePage, "  MEMBERS")
 
--- member cards
 local memberData = {
-    { name = "GATAS", role = "milk", color = Color3.fromRGB(255,120,190) },
-    { name = "NIWA",  role = "may bitaw kaso binitawan", color = Color3.fromRGB(255,100,180) },
-    { name = "JAYY",  role = "bading", color = Color3.fromRGB(240, 80,170) },
-    { name = "STAN",  role = "KUPAL", color = DEEP_PINK, logo = true },
+    { name="GATAS", role="milk",                    color=Color3.fromRGB(255,120,190) },
+    { name="NIWA",  role="may bitaw kaso binitawan", color=Color3.fromRGB(255,100,180) },
+    { name="IAN",  role="Takot sa naka tarak", color=Color3.fromRGB(255,100,180) },
+    { name="JAYY",  role="bading",                  color=Color3.fromRGB(240,80,170)  },
+    { name="STAN",  role="KUPAL",                   color=DEEP_PINK, logo=true        },
 }
 
 for _, m in ipairs(memberData) do
@@ -508,8 +474,8 @@ for _, m in ipairs(memberData) do
     card.BackgroundColor3 = Color3.fromRGB(60,22,48)
     card.BorderSizePixel  = 0
     card.Parent           = homePage
-    corner(card, 10)
-    stroke(card, m.color, 1)
+    mkCorner(card, 10)
+    mkStroke(card, m.color, 1)
 
     local colorBar = Instance.new("Frame")
     colorBar.Size             = UDim2.new(0,4,0.7,0)
@@ -517,15 +483,15 @@ for _, m in ipairs(memberData) do
     colorBar.BackgroundColor3 = m.color
     colorBar.BorderSizePixel  = 0
     colorBar.Parent           = card
-    corner(colorBar, 2)
+    mkCorner(colorBar, 2)
 
-    local nameL = label(card, m.name, 13, WHITE, Enum.Font.GothamBold, {
+    mkLabel(card, m.name, 13, WHITE, Enum.Font.GothamBold, {
         Size = UDim2.new(0.6,0,0,20),
         Position = UDim2.new(0,20,0.1,0),
         TextXAlignment = Enum.TextXAlignment.Left,
     })
 
-    local roleL = label(card, m.role, 10, LIGHT_PINK, Enum.Font.Gotham, {
+    mkLabel(card, m.role, 10, LIGHT_PINK, Enum.Font.Gotham, {
         Size = UDim2.new(0.6,0,0,16),
         Position = UDim2.new(0,20,0.55,0),
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -539,41 +505,36 @@ for _, m in ipairs(memberData) do
         sImg.Image             = STAN_LOGO
         sImg.ScaleType         = Enum.ScaleType.Fit
         sImg.Parent            = card
-        corner(sImg, 6)
+        mkCorner(sImg, 6)
     end
 end
 
--- ════════════════════════════
+-- ══════════════════════════════════════
 --  STORAGE TAB
--- ════════════════════════════
-local storagePage = tabPages["📦  Storage"]
+-- ══════════════════════════════════════
+local storagePage = AddTab("📦  Storage")
 
--- section label
-local storageTitle = label(storagePage, "", 12, PINK, Enum.Font.GothamBold, {
-    Size = UDim2.new(0.9,0,0,20),
-    TextXAlignment = Enum.TextXAlignment.Left,
-})
+addSectionLabel(storagePage, "  KEYBINDS")
 
--- keybind card
 local keybindCard = Instance.new("Frame")
 keybindCard.Size             = UDim2.new(0.9,0,0,140)
 keybindCard.BackgroundColor3 = Color3.fromRGB(50,18,40)
 keybindCard.BorderSizePixel  = 0
 keybindCard.Parent           = storagePage
-corner(keybindCard, 12)
-stroke(keybindCard, PINK, 1.5)
+mkCorner(keybindCard, 12)
+mkStroke(keybindCard, PINK, 1.5)
 
-local function makeKeyRow(parent, labelTxt, yOff, keyRef)
+local function mkKeyRow(parent, labelTxt, yOff, keyRef)
     local row = Instance.new("Frame")
     row.Size             = UDim2.new(0.92,0,0,38)
     row.Position         = UDim2.new(0.04,0,0,yOff)
     row.BackgroundColor3 = Color3.fromRGB(65,25,52)
     row.BorderSizePixel  = 0
     row.Parent           = parent
-    corner(row, 8)
-    stroke(row, Color3.fromRGB(120,40,90), 1)
+    mkCorner(row, 8)
+    mkStroke(row, Color3.fromRGB(120,40,90), 1)
 
-    local lbl = label(row, labelTxt, 12, LIGHT_PINK, Enum.Font.GothamSemibold, {
+    mkLabel(row, labelTxt, 12, LIGHT_PINK, Enum.Font.GothamSemibold, {
         Size = UDim2.new(0.55,0,1,0),
         Position = UDim2.new(0,12,0,0),
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -589,17 +550,17 @@ local function makeKeyRow(parent, labelTxt, yOff, keyRef)
     keyBtn.Font             = Enum.Font.GothamBold
     keyBtn.AutoButtonColor  = false
     keyBtn.Parent           = row
-    corner(keyBtn, 6)
-    stroke(keyBtn, WHITE, 1)
+    mkCorner(keyBtn, 6)
+    mkStroke(keyBtn, WHITE, 1)
 
     return keyBtn
 end
 
 local rebinding = nil
-local pending   = { hide = binds.hide, show = binds.show }
+local pending   = { hide=binds.hide, show=binds.show }
 
-local hideBtn = makeKeyRow(keybindCard, "KUWA  (Inv)",     8,  binds.hide)
-local showBtn = makeKeyRow(keybindCard, "TAGO  (Backpack)", 54, binds.show)
+local hideBtn = mkKeyRow(keybindCard, "KUWA  (Inv)",      8,  binds.hide)
+local showBtn = mkKeyRow(keybindCard, "TAGO  (Backpack)", 54, binds.show)
 
 local saveRow = Instance.new("TextButton")
 saveRow.Size             = UDim2.new(0.92,0,0,30)
@@ -611,115 +572,62 @@ saveRow.TextSize         = 12
 saveRow.Font             = Enum.Font.GothamBold
 saveRow.AutoButtonColor  = false
 saveRow.Parent           = keybindCard
-corner(saveRow, 8)
+mkCorner(saveRow, 8)
 
-local hintL = label(storagePage, IS_MOBILE and "Tap KUWA/TAGO to rebind" or "", 10, Color3.fromRGB(160,80,130), Enum.Font.Gotham, {
-    Size = UDim2.new(0.9,0,0,16),
-    TextXAlignment = Enum.TextXAlignment.Left,
-})
+addSectionLabel(storagePage, "  PROXIMITY PROMPTS")
 
--- ── PROXIMITY PROMPT SECTION ──
-local ppTitle = label(storagePage, "", 12, PINK, Enum.Font.GothamBold, {
-    Size = UDim2.new(0.9,0,0,20),
-    TextXAlignment = Enum.TextXAlignment.Left,
-})
-
-local ppCard = Instance.new("Frame")
-ppCard.Size             = UDim2.new(0.9,0,0,58)
-ppCard.BackgroundColor3 = Color3.fromRGB(50,18,40)
-ppCard.BorderSizePixel  = 0
-ppCard.Parent           = storagePage
-corner(ppCard, 12)
-stroke(ppCard, PINK, 1.5)
-
-local ppLabel = label(ppCard, "Remove Hold Duration", 12, LIGHT_PINK, Enum.Font.GothamSemibold, {
-    Size = UDim2.new(0.65,0,1,0),
-    Position = UDim2.new(0,14,0,0),
-    TextXAlignment = Enum.TextXAlignment.Left,
-})
-
-local ppOn = false
-local ppToggle = Instance.new("TextButton")
-ppToggle.Size             = UDim2.new(0,90,0,30)
-ppToggle.Position         = UDim2.new(1,-100,0.5,-15)
-ppToggle.BackgroundColor3 = Color3.fromRGB(80,25,60)
-ppToggle.Text             = "OFF"
-ppToggle.TextColor3       = LIGHT_PINK
-ppToggle.TextSize         = 12
-ppToggle.Font             = Enum.Font.GothamBold
-ppToggle.AutoButtonColor  = false
-ppToggle.Parent           = ppCard
-corner(ppToggle, 8)
-stroke(ppToggle, PINK, 1)
-
--- ════════════════════════════
---  LOGIC: Proximity Prompt
--- ════════════════════════════
-local ppConnection = nil
-
-local function removeHold(prompt)
-    if prompt:IsA("ProximityPrompt") then
-        prompt.HoldDuration = 0
-    end
-end
-
-ppToggle.MouseButton1Click:Connect(function()
-    ppOn = not ppOn
-    if ppOn then
-        tween(ppToggle, { BackgroundColor3 = DEEP_PINK, TextColor3 = WHITE }, 0.15)
-        ppToggle.Text = "ON"
+local ppConn = nil
+addToggleCard(storagePage, "Remove Hold Duration", function(on)
+    if on then
         for _, obj in ipairs(workspace:GetDescendants()) do
-            removeHold(obj)
+            if obj:IsA("ProximityPrompt") then obj.HoldDuration=0 end
         end
-        ppConnection = workspace.DescendantAdded:Connect(removeHold)
+        ppConn = workspace.DescendantAdded:Connect(function(obj)
+            if obj:IsA("ProximityPrompt") then obj.HoldDuration=0 end
+        end)
     else
-        tween(ppToggle, { BackgroundColor3 = Color3.fromRGB(80,25,60), TextColor3 = LIGHT_PINK }, 0.15)
-        ppToggle.Text = "OFF"
-        if ppConnection then
-            ppConnection:Disconnect()
-            ppConnection = nil
-        end
+        if ppConn then ppConn:Disconnect() ppConn=nil end
     end
 end)
 
--- ════════════════════════════
---  LOGIC: Keybind rebind
--- ════════════════════════════
+-- ══════════════════════════════════════
+--  KEYBIND REBIND LOGIC
+-- ══════════════════════════════════════
 local function setRebind(btn, which)
-    rebinding = which
+    rebinding      = which
     btn.Text       = "[ Press ]"
-    btn.TextColor3 = Color3.fromRGB(255, 230, 80)
-    tween(btn, { BackgroundColor3 = Color3.fromRGB(60,45,10) }, 0.1)
+    btn.TextColor3 = Color3.fromRGB(255,230,80)
+    tw(btn, {BackgroundColor3=Color3.fromRGB(60,45,10)}, 0.1)
 end
 
-hideBtn.MouseButton1Click:Connect(function() setRebind(hideBtn, "hide") end)
-showBtn.MouseButton1Click:Connect(function() setRebind(showBtn, "show") end)
+hideBtn.MouseButton1Click:Connect(function() setRebind(hideBtn,"hide") end)
+showBtn.MouseButton1Click:Connect(function() setRebind(showBtn,"show") end)
 
 saveRow.MouseButton1Click:Connect(function()
     binds.hide = pending.hide
     binds.show = pending.show
-    tween(saveRow, { BackgroundColor3 = Color3.fromRGB(30,80,40) }, 0.1)
+    tw(saveRow, {BackgroundColor3=Color3.fromRGB(30,80,40)}, 0.1)
     saveRow.Text = "✓  Saved!"
     task.delay(1.2, function()
-        tween(saveRow, { BackgroundColor3 = DEEP_PINK }, 0.2)
+        tw(saveRow, {BackgroundColor3=DEEP_PINK}, 0.2)
         saveRow.Text = "✓  Save Keybinds"
     end)
 end)
 
--- ════════════════════════════
---  TOGGLE UI VISIBILITY
--- ════════════════════════════
-local uiVisible = true  -- starts visible
+-- ══════════════════════════════════════
+--  TOGGLE UI
+-- ══════════════════════════════════════
+local uiVisible = true
 
 local function toggleUI()
     uiVisible = not uiVisible
     if uiVisible then
-        win.Visible = true
+        win.Visible            = true
         win.BackgroundTransparency = 1
-        tween(win, { BackgroundTransparency = 0 }, 0.25)
+        tw(win, {BackgroundTransparency=0}, 0.25)
     else
-        tween(win, { BackgroundTransparency = 1 }, 0.2)
-        task.delay(0.22, function() win.Visible = false end)
+        tw(win, {BackgroundTransparency=1}, 0.2)
+        task.delay(0.22, function() win.Visible=false end)
     end
 end
 
@@ -728,31 +636,29 @@ closeBtn.MouseButton1Click:Connect(function()
     toggleUI()
 end)
 
-if IS_MOBILE and mobileBtn then
-    mobileBtn.MouseButton1Click:Connect(function()
-        toggleUI()
-    end)
+if IS_MOB and mobileBtn then
+    mobileBtn.MouseButton1Click:Connect(toggleUI)
 end
 
--- ════════════════════════════
+-- ══════════════════════════════════════
 --  INPUT (PC)
--- ════════════════════════════
-if not IS_MOBILE then
+-- ══════════════════════════════════════
+if not IS_MOB then
     UIS.InputBegan:Connect(function(input, gpe)
         if gpe then return end
 
         if rebinding then
             local kc = input.KeyCode
-            if kc ~= Enum.KeyCode.Unknown and kc ~= Enum.KeyCode.Escape then
+            if kc~=Enum.KeyCode.Unknown and kc~=Enum.KeyCode.Escape then
                 pending[rebinding] = kc
-                if rebinding == "hide" then
+                if rebinding=="hide" then
                     hideBtn.Text       = kc.Name
                     hideBtn.TextColor3 = WHITE
-                    tween(hideBtn, { BackgroundColor3 = DEEP_PINK }, 0.1)
+                    tw(hideBtn, {BackgroundColor3=DEEP_PINK}, 0.1)
                 else
                     showBtn.Text       = kc.Name
                     showBtn.TextColor3 = WHITE
-                    tween(showBtn, { BackgroundColor3 = DEEP_PINK }, 0.1)
+                    tw(showBtn, {BackgroundColor3=DEEP_PINK}, 0.1)
                 end
                 rebinding = nil
             end
@@ -765,14 +671,9 @@ if not IS_MOBILE then
         end
 
         if input.KeyCode == binds.hide then
-            Inventory:FireServer("Change", "Glock-17", "Inv")
+            Inventory:FireServer("Change","Glock-17","Inv")
         elseif input.KeyCode == binds.show then
-            Inventory:FireServer("Change", "Glock-17", "Backpack")
+            Inventory:FireServer("Change","Glock-17","Backpack")
         end
     end)
 end
-
--- ════════════════════════════
---  INIT — default tab
--- ════════════════════════════
-switchTab("🏠  Home")
