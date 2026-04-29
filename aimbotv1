@@ -1,8 +1,3 @@
--- ╔══════════════════════════════════════╗
--- ║     POWERPUFF GIRLS HUB v1.0         ║
--- ║     Group Whitelist | Pink Theme     ║
--- ╚══════════════════════════════════════╝
-
 local UIS    = game:GetService("UserInputService")
 local RS     = game:GetService("ReplicatedStorage")
 local TS     = game:GetService("TweenService")
@@ -10,9 +5,6 @@ local CoreGui= game:GetService("CoreGui")
 local Players= game:GetService("Players")
 local Run    = game:GetService("RunService")
 
--- ════════════════════════════
---  ARCEUS X / EXECUTOR FIX
--- ════════════════════════════
 local safeGui = (typeof(gethui) == "function") and gethui() or CoreGui
 
 -- ════════════════════════════
@@ -20,7 +12,7 @@ local safeGui = (typeof(gethui) == "function") and gethui() or CoreGui
 -- ════════════════════════════
 local GROUP_ID   = 10624540
 local STAN_LOGO  = "rbxassetid://108630769378983"
-local MEMBERS    = { "gatas", "niwa", "jayy", "stan" }
+local MEMBERS    = { "GATAS", "NIWA", "JAYY", "STAN" }
 
 local PINK       = Color3.fromRGB(255, 105, 180)
 local DEEP_PINK  = Color3.fromRGB(220, 50,  140)
@@ -146,7 +138,7 @@ local Inventory = RS:WaitForChild("Storage"):WaitForChild("Inventory")
 local function corner(p, r)
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, r or 8)
-    c.Parent = p
+    c.Parent = l
     return c
 end
 
@@ -154,7 +146,7 @@ local function stroke(p, col, thick)
     local s = Instance.new("UIStroke")
     s.Color     = col   or PINK
     s.Thickness = thick or 1.5
-    s.Parent    = p
+    s.Parent    = l
     return s
 end
 
@@ -240,7 +232,7 @@ win.Position          = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)
 win.BackgroundColor3  = DARK_BG
 win.BorderSizePixel   = 0
 win.Active            = true
-win.Visible           = true   -- visible agad sa execute
+win.Visible           = false   -- visible agad sa execute
 win.Parent            = sg
 corner(win, 14)
 stroke(win, PINK, 2)
@@ -319,7 +311,7 @@ titleGrad.Color    = ColorSequence.new({
 titleGrad.Rotation = 90
 titleGrad.Parent   = titleBar
 
-local titleLbl = label(titleBar, "🌸  POWERPUFF HUB", 15, WHITE, Enum.Font.GothamBold, {
+local titleLbl = label(titleBar, "🌸  POWERPUFF", 15, WHITE, Enum.Font.GothamBold, {
     Size = UDim2.new(1,-50,1,0),
     Position = UDim2.new(0,16,0,0),
     TextXAlignment = Enum.TextXAlignment.Left,
@@ -497,17 +489,17 @@ task.spawn(function()
 end)
 
 -- members section label
-local membersTitle = label(homePage, "👯  MEMBERS", 12, PINK, Enum.Font.GothamBold, {
+local membersTitle = label(homePage, "  MEMBERS", 12, PINK, Enum.Font.GothamBold, {
     Size = UDim2.new(0.9,0,0,20),
     TextXAlignment = Enum.TextXAlignment.Left,
 })
 
 -- member cards
 local memberData = {
-    { name = "gatas", role = "Member", color = Color3.fromRGB(255,120,190) },
-    { name = "niwa",  role = "Member", color = Color3.fromRGB(255,100,180) },
-    { name = "jayy",  role = "Member", color = Color3.fromRGB(240, 80,170) },
-    { name = "stan",  role = "Leader • S", color = DEEP_PINK, logo = true },
+    { name = "GATAS", role = "milk", color = Color3.fromRGB(255,120,190) },
+    { name = "NIWA",  role = "may bitaw kaso binitawan", color = Color3.fromRGB(255,100,180) },
+    { name = "JAYY",  role = "bading", color = Color3.fromRGB(240, 80,170) },
+    { name = "STAN",  role = "KUPAL", color = DEEP_PINK, logo = true },
 }
 
 for _, m in ipairs(memberData) do
