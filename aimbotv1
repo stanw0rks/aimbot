@@ -7,22 +7,24 @@ local CoreGui = game:GetService("CoreGui")
 
 local safeGui = (typeof(gethui)=="function") and gethui() or CoreGui
 local LP      = Players.LocalPlayer
+local Cam     = workspace.CurrentCamera
 
 local GROUP_ID  = 10624540
 local STAN_LOGO = "rbxassetid://108630769378983"
+local PPG_BG    = "rbxassetid://85363339150476"
 
-local PINK       = Color3.fromRGB(255,105,180)
-local DEEP_PINK  = Color3.fromRGB(220,50,140)
-local LIGHT_PINK = Color3.fromRGB(255,182,213)
-local DARK_BG    = Color3.fromRGB(30,15,25)
-local CARD_BG    = Color3.fromRGB(45,20,38)
-local WHITE      = Color3.fromRGB(255,255,255)
+local PINK        = Color3.fromRGB(255,105,180)
+local DEEP_PINK   = Color3.fromRGB(220,50,140)
+local LIGHT_PINK  = Color3.fromRGB(255,182,213)
+local DARK_BG     = Color3.fromRGB(30,15,25)
+local CARD_BG     = Color3.fromRGB(45,20,38)
+local WHITE       = Color3.fromRGB(255,255,255)
 
 local binds  = { hide = Enum.KeyCode.H, show = Enum.KeyCode.J }
 local IS_MOB = UIS.TouchEnabled and not UIS.KeyboardEnabled
 
 -- ══════════════════════════════════════
---  GROUP CHECK
+--  GROUP CHECK (LOADING SCREEN)
 -- ══════════════════════════════════════
 local IS_MEMBER = LP:IsInGroup(GROUP_ID)
 
@@ -174,6 +176,17 @@ sg.IgnoreGuiInset = true
 sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 sg.Parent         = safeGui
 
+-- FOV Circle for Aimbot
+local fovCircle = Instance.new("Frame", sg)
+fovCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+fovCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+fovCircle.BackgroundTransparency = 1
+fovCircle.Visible = false
+Instance.new("UICorner", fovCircle).CornerRadius = UDim.new(1, 0)
+local circleStroke = Instance.new("UIStroke", fovCircle)
+circleStroke.Color = PINK
+circleStroke.Thickness = 2
+
 -- ══════════════════════════════════════
 --  MOBILE BUTTON
 -- ══════════════════════════════════════
@@ -211,6 +224,15 @@ win.Visible          = true
 win.Parent           = sg
 mkCorner(win, 14)
 mkStroke(win, PINK, 2)
+
+-- Custom Background Image from your Script
+local winBgImg = Instance.new("ImageLabel", win)
+winBgImg.Size = UDim2.new(1, 0, 1, 0)
+winBgImg.Image = PPG_BG
+winBgImg.ScaleType = Enum.ScaleType.Crop
+winBgImg.ImageTransparency = 0.85
+winBgImg.ZIndex = 0
+mkCorner(winBgImg, 14)
 
 local winGrad = Instance.new("UIGradient")
 winGrad.Color    = ColorSequence.new({
@@ -281,8 +303,8 @@ tabLayout.Padding             = UDim.new(0,4)
 tabLayout.Parent              = tabBar
 
 local tabPad = Instance.new("UIPadding")
-tabPad.PaddingLeft  = UDim.new(0,4)
-tabPad.PaddingRight = UDim.new(0,4)
+tabPad.PaddingLeft  = UDim.new(0,2)
+tabPad.PaddingRight = UDim.new(0,2)
 tabPad.Parent       = tabBar
 
 -- ── CONTENT AREA ───────────────────────
@@ -296,8 +318,6 @@ mkCorner(contentArea, 10)
 
 -- ══════════════════════════════════════
 --  TAB SYSTEM
---  To add a new tab: AddTab("🔧  MyTab")
---  then access:      getPage("🔧  MyTab")
 -- ══════════════════════════════════════
 local tabBtns  = {}
 local tabPages = {}
@@ -319,12 +339,12 @@ end
 
 local function AddTab(name)
     local tb = Instance.new("TextButton")
-    tb.Size             = UDim2.new(0,108,0,26)
+    tb.Size             = UDim2.new(0,68,0,26)
     tb.BackgroundColor3 = Color3.fromRGB(55,25,45)
     tb.Text             = name
     tb.TextColor3       = LIGHT_PINK
-    tb.TextSize         = 11
-    tb.Font             = Enum.Font.GothamSemibold
+    tb.TextSize         = 10
+    tb.Font             = Enum.Font.GothamBold
     tb.AutoButtonColor  = false
     tb.Parent           = tabBar
     mkCorner(tb, 6)
@@ -352,15 +372,9 @@ local function AddTab(name)
 
     tabBtns[name]  = tb
     tabPages[name] = page
-
     tb.MouseButton1Click:Connect(function() switchTab(name) end)
-
     if not activeTab then switchTab(name) end
     return page
-end
-
-local function getPage(name)
-    return tabPages[name]
 end
 
 -- ══════════════════════════════════════
@@ -375,7 +389,6 @@ end
 
 local function addToggleCard(page, labelText, onToggle)
     local on = false
-
     local card = Instance.new("Frame")
     card.Size             = UDim2.new(0.9,0,0,52)
     card.BackgroundColor3 = Color3.fromRGB(50,18,40)
@@ -414,14 +427,45 @@ local function addToggleCard(page, labelText, onToggle)
         end
         task.spawn(onToggle, on)
     end)
-
     return togBtn
+end
+
+local function addInputCard(page, labelText, default, onEnter)
+    local card = Instance.new("Frame")
+    card.Size             = UDim2.new(0.9,0,0,52)
+    card.BackgroundColor3 = Color3.fromRGB(50,18,40)
+    card.BorderSizePixel  = 0
+    card.Parent           = page
+    mkCorner(card, 12)
+    mkStroke(card, PINK, 1.5)
+
+    mkLabel(card, labelText, 12, LIGHT_PINK, Enum.Font.GothamSemibold, {
+        Size = UDim2.new(0.6,0,1,0),
+        Position = UDim2.new(0,14,0,0),
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    local input = Instance.new("TextBox")
+    input.Size             = UDim2.new(0,80,0,28)
+    input.Position         = UDim2.new(1,-90,0.5,-14)
+    input.BackgroundColor3 = Color3.fromRGB(60,25,50)
+    input.Text             = tostring(default)
+    input.TextColor3       = WHITE
+    input.TextSize         = 12
+    input.Font             = Enum.Font.GothamBold
+    input.Parent           = card
+    mkCorner(input, 8)
+    mkStroke(input, PINK, 1)
+
+    input.FocusLost:Connect(function()
+        onEnter(input.Text)
+    end)
 end
 
 -- ══════════════════════════════════════
 --  HOME TAB
 -- ══════════════════════════════════════
-local homePage = AddTab("🏠  Home")
+local homePage = AddTab("🏠 Home")
 
 local logoCard = Instance.new("Frame")
 logoCard.Size             = UDim2.new(0.9,0,0,100)
@@ -436,7 +480,7 @@ logoImg.Size              = UDim2.new(0,72,0,72)
 logoImg.Position          = UDim2.new(0.5,-36,0.5,-36)
 logoImg.BackgroundTransparency = 1
 logoImg.Image             = STAN_LOGO
-logoImg.ScaleType         = Enum.ScaleType.Fit
+logoImg.ScaleType          = Enum.ScaleType.Fit
 logoImg.Parent            = logoCard
 mkCorner(logoImg, 8)
 
@@ -463,7 +507,7 @@ addSectionLabel(homePage, "  MEMBERS")
 local memberData = {
     { name="GATAS", role="milk",                    color=Color3.fromRGB(255,120,190) },
     { name="NIWA",  role="may bitaw kaso binitawan", color=Color3.fromRGB(255,100,180) },
-    { name="IAN",  role="Takot sa naka tarak", color=Color3.fromRGB(255,100,180) },
+    { name="IAN",   role="Takot sa naka tarak", color=Color3.fromRGB(255,100,180) },
     { name="JAYY",  role="bading",                  color=Color3.fromRGB(240,80,170)  },
     { name="STAN",  role="KUPAL",                   color=DEEP_PINK, logo=true        },
 }
@@ -503,21 +547,58 @@ for _, m in ipairs(memberData) do
         sImg.Position          = UDim2.new(1,-44,0.5,-17)
         sImg.BackgroundTransparency = 1
         sImg.Image             = STAN_LOGO
-        sImg.ScaleType         = Enum.ScaleType.Fit
+        sImg.ScaleType          = Enum.ScaleType.Fit
         sImg.Parent            = card
         mkCorner(sImg, 6)
     end
 end
 
 -- ══════════════════════════════════════
+--  AIMBOT TAB (NEW SCRIPT INTEGRATED)
+-- ══════════════════════════════════════
+local aimbotPage = AddTab("🎯 Aim")
+local aimEnabled = false
+local aimFovVal = 220
+
+addSectionLabel(aimbotPage, "  PPG POWER HUB")
+addToggleCard(aimbotPage, "Enable Power (Aimbot)", function(on)
+    aimEnabled = on
+    fovCircle.Visible = on
+end)
+
+addInputCard(aimbotPage, "FOV Radius", 220, function(val)
+    local n = tonumber(val)
+    if n then 
+        aimFovVal = n 
+        fovCircle.Size = UDim2.new(0, n*2, 0, n*2)
+    end
+end)
+
+-- ══════════════════════════════════════
+--  HITBOX TAB (NEW SCRIPT INTEGRATED)
+-- ══════════════════════════════════════
+local hitboxPage = AddTab("📏 Box")
+local hbEnabled = false
+local hbSizeVal = 10
+
+addSectionLabel(hitboxPage, "  BLOSSOM'S POWER")
+addToggleCard(hitboxPage, "Fight Crimes (Hitbox)", function(on)
+    hbEnabled = on
+end)
+
+addInputCard(hitboxPage, "Blossom Size", 10, function(val)
+    local n = tonumber(val)
+    if n then hbSizeVal = n end
+end)
+
+-- ══════════════════════════════════════
 --  STORAGE TAB
 -- ══════════════════════════════════════
-local storagePage = AddTab("📦  Storage")
-
+local storagePage = AddTab("📦 Inv")
 addSectionLabel(storagePage, "  KEYBINDS")
 
 local keybindCard = Instance.new("Frame")
-keybindCard.Size             = UDim2.new(0.9,0,0,140)
+keybindCard.Size             = UDim2.new(0, 306, 0, 140)
 keybindCard.BackgroundColor3 = Color3.fromRGB(50,18,40)
 keybindCard.BorderSizePixel  = 0
 keybindCard.Parent           = storagePage
@@ -529,7 +610,6 @@ local function mkKeyRow(parent, labelTxt, yOff, keyRef)
     row.Size             = UDim2.new(0.92,0,0,38)
     row.Position         = UDim2.new(0.04,0,0,yOff)
     row.BackgroundColor3 = Color3.fromRGB(65,25,52)
-    row.BorderSizePixel  = 0
     row.Parent           = parent
     mkCorner(row, 8)
     mkStroke(row, Color3.fromRGB(120,40,90), 1)
@@ -546,21 +626,17 @@ local function mkKeyRow(parent, labelTxt, yOff, keyRef)
     keyBtn.BackgroundColor3 = DEEP_PINK
     keyBtn.Text             = keyRef.Name
     keyBtn.TextColor3       = WHITE
-    keyBtn.TextSize         = 11
     keyBtn.Font             = Enum.Font.GothamBold
-    keyBtn.AutoButtonColor  = false
     keyBtn.Parent           = row
     mkCorner(keyBtn, 6)
-    mkStroke(keyBtn, WHITE, 1)
-
     return keyBtn
 end
 
 local rebinding = nil
 local pending   = { hide=binds.hide, show=binds.show }
 
-local hideBtn = mkKeyRow(keybindCard, "KUWA  (Inv)",      8,  binds.hide)
-local showBtn = mkKeyRow(keybindCard, "TAGO  (Backpack)", 54, binds.show)
+local hideBtn = mkKeyRow(keybindCard, "KUWA (Inv)", 8, binds.hide)
+local showBtn = mkKeyRow(keybindCard, "TAGO (Backpack)", 54, binds.show)
 
 local saveRow = Instance.new("TextButton")
 saveRow.Size             = UDim2.new(0.92,0,0,30)
@@ -568,112 +644,83 @@ saveRow.Position         = UDim2.new(0.04,0,1,-38)
 saveRow.BackgroundColor3 = DEEP_PINK
 saveRow.Text             = "✓  Save Keybinds"
 saveRow.TextColor3       = WHITE
-saveRow.TextSize         = 12
 saveRow.Font             = Enum.Font.GothamBold
-saveRow.AutoButtonColor  = false
 saveRow.Parent           = keybindCard
 mkCorner(saveRow, 8)
 
-addSectionLabel(storagePage, "  PROXIMITY PROMPTS")
-
-local ppConn = nil
+addSectionLabel(storagePage, "  PROXIMITY")
 addToggleCard(storagePage, "Remove Hold Duration", function(on)
-    if on then
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj:IsA("ProximityPrompt") then obj.HoldDuration=0 end
-        end
-        ppConn = workspace.DescendantAdded:Connect(function(obj)
-            if obj:IsA("ProximityPrompt") then obj.HoldDuration=0 end
-        end)
-    else
-        if ppConn then ppConn:Disconnect() ppConn=nil end
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then obj.HoldDuration = (on and 0 or 1) end
     end
 end)
 
 -- ══════════════════════════════════════
---  KEYBIND REBIND LOGIC
+--  CORE LOGIC (RENDER STEPPED)
 -- ══════════════════════════════════════
-local function setRebind(btn, which)
-    rebinding      = which
-    btn.Text       = "[ Press ]"
-    btn.TextColor3 = Color3.fromRGB(255,230,80)
-    tw(btn, {BackgroundColor3=Color3.fromRGB(60,45,10)}, 0.1)
-end
+RunService.RenderStepped:Connect(function()
+    -- Hitbox Logic
+    if hbEnabled then
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = p.Character.HumanoidRootPart
+                hrp.Size = Vector3.new(hbSizeVal, hbSizeVal, hbSizeVal)
+                hrp.Transparency = 0.8
+                hrp.Color = PINK
+                hrp.CanCollide = false
+            end
+        end
+    end
 
-hideBtn.MouseButton1Click:Connect(function() setRebind(hideBtn,"hide") end)
-showBtn.MouseButton1Click:Connect(function() setRebind(showBtn,"show") end)
-
-saveRow.MouseButton1Click:Connect(function()
-    binds.hide = pending.hide
-    binds.show = pending.show
-    tw(saveRow, {BackgroundColor3=Color3.fromRGB(30,80,40)}, 0.1)
-    saveRow.Text = "✓  Saved!"
-    task.delay(1.2, function()
-        tw(saveRow, {BackgroundColor3=DEEP_PINK}, 0.2)
-        saveRow.Text = "✓  Save Keybinds"
-    end)
+    -- Aimbot Logic
+    if aimEnabled and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+        local center = Vector2.new(Cam.ViewportSize.X/2, Cam.ViewportSize.Y/2)
+        local bestDist, target = math.huge, nil
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LP and p.Character and p.Character:FindFirstChild("Head") then
+                local head = p.Character.Head
+                local hum = p.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    local screenPos, vis = Cam:WorldToViewportPoint(head.Position)
+                    if vis then
+                        local mag = (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude
+                        if mag <= aimFovVal and mag < bestDist then
+                            bestDist = mag; target = head
+                        end
+                    end
+                end
+            end
+        end
+        if target then
+            Cam.CFrame = CFrame.new(Cam.CFrame.Position, target.Position)
+        end
+    end
 end)
 
 -- ══════════════════════════════════════
---  TOGGLE UI
+--  KEYBIND REBIND & UI TOGGLE
 -- ══════════════════════════════════════
-local uiVisible = true
+hideBtn.MouseButton1Click:Connect(function() rebinding="hide" hideBtn.Text="[...]" end)
+showBtn.MouseButton1Click:Connect(function() rebinding="show" showBtn.Text="[...]" end)
+saveRow.MouseButton1Click:Connect(function() binds.hide=pending.hide binds.show=pending.show saveRow.Text="✓ Saved!" task.wait(1) saveRow.Text="✓ Save Keybinds" end)
 
+local uiVisible = true
 local function toggleUI()
     uiVisible = not uiVisible
-    if uiVisible then
-        win.Visible            = true
-        win.BackgroundTransparency = 1
-        tw(win, {BackgroundTransparency=0}, 0.25)
-    else
-        tw(win, {BackgroundTransparency=1}, 0.2)
-        task.delay(0.22, function() win.Visible=false end)
+    win.Visible = uiVisible
+    if not uiVisible then fovCircle.Visible = false else fovCircle.Visible = aimEnabled end
+end
+
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if rebinding then
+        pending[rebinding] = input.KeyCode
+        if rebinding=="hide" then hideBtn.Text=input.KeyCode.Name else showBtn.Text=input.KeyCode.Name end
+        rebinding = nil return
     end
-end
-
-closeBtn.MouseButton1Click:Connect(function()
-    uiVisible = true
-    toggleUI()
+    if input.KeyCode == Enum.KeyCode.L then toggleUI() end
+    if input.KeyCode == binds.hide then Inventory:FireServer("Change","Glock-17","Inv") end
+    if input.KeyCode == binds.show then Inventory:FireServer("Change","Glock-17","Backpack") end
 end)
-
-if IS_MOB and mobileBtn then
-    mobileBtn.MouseButton1Click:Connect(toggleUI)
-end
-
--- ══════════════════════════════════════
---  INPUT (PC)
--- ══════════════════════════════════════
-if not IS_MOB then
-    UIS.InputBegan:Connect(function(input, gpe)
-        if gpe then return end
-
-        if rebinding then
-            local kc = input.KeyCode
-            if kc~=Enum.KeyCode.Unknown and kc~=Enum.KeyCode.Escape then
-                pending[rebinding] = kc
-                if rebinding=="hide" then
-                    hideBtn.Text       = kc.Name
-                    hideBtn.TextColor3 = WHITE
-                    tw(hideBtn, {BackgroundColor3=DEEP_PINK}, 0.1)
-                else
-                    showBtn.Text       = kc.Name
-                    showBtn.TextColor3 = WHITE
-                    tw(showBtn, {BackgroundColor3=DEEP_PINK}, 0.1)
-                end
-                rebinding = nil
-            end
-            return
-        end
-
-        if input.KeyCode == Enum.KeyCode.L then
-            toggleUI()
-            return
-        end
-
-        if input.KeyCode == binds.hide then
-            Inventory:FireServer("Change","Glock-17","Inv")
-        elseif input.KeyCode == binds.show then
-            Inventory:FireServer("Change","Glock-17","Backpack")
-        end
-    end)
-end
+closeBtn.MouseButton1Click:Connect(toggleUI)
+if mobileBtn then mobileBtn.MouseButton1Click:Connect(toggleUI) end
