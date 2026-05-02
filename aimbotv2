@@ -1,342 +1,394 @@
-local Players          = game:GetService("Players")
-local RunService       = game:GetService("RunService")
-local TweenService     = game:GetService("TweenService")
+-- ============================================
+-- KOGORO/2KS MAIN CHEAT - FULLY RECONSTRUCTED
+-- ============================================
+-- Deobfuscated and reconstructed GUI
+-- Ready for Delta Executor
+-- Date: 12/30/2025, 8:57:34 AM
+-- ============================================
 
-local lp  = Players.LocalPlayer
-local cam = workspace.CurrentCamera
-local on  = false
-local blacklist = {}
-local listMinimized = false
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
--- ================== FOV SETTINGS ==================
-local FOV_RADIUS = 150                    -- laki ng bilog (pwede mo baguhin)
-local AIMBOT_RENDER_NAME = "MobileFOVAimbot"
--- =================================================
+-- ============================================
+-- KEY SYSTEM GUI
+-- ============================================
+local player = LocalPlayer
+local keyGui = Instance.new("ScreenGui")
+keyGui.Name = "KOGORO_KeySystem"
+keyGui.ResetOnSpawn = false
+keyGui.Parent = player:WaitForChild("PlayerGui")
 
-local function getHRP()
-    local c = lp.Character
-    return c and c:FindFirstChild("HumanoidRootPart")
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://1837849285"
+sound.Volume = 0.5
+sound.Parent = keyGui
+sound:Play()
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 400, 0, 250)
+keyFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+keyFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+keyFrame.BorderSizePixel = 0
+keyFrame.Parent = keyGui
+Instance.new("UICorner", keyFrame).CornerRadius = UDim.new(0, 12)
+
+local bgImage = Instance.new("ImageLabel")
+bgImage.Size = UDim2.new(1, 0, 1, 0)
+bgImage.BackgroundTransparency = 1
+bgImage.Image = "rbxassetid://90293872604973"
+bgImage.ImageTransparency = 0.7
+bgImage.ScaleType = Enum.ScaleType.Crop
+bgImage.ZIndex = 0
+bgImage.Parent = keyFrame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -40, 0, 50)
+title.Position = UDim2.new(0, 20, 0, 20)
+title.BackgroundTransparency = 1
+title.Text = "KOGORO MAIN CHEAT"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 24
+title.TextColor3 = Color3.fromRGB(255, 50, 50)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.ZIndex = 2
+title.Parent = keyFrame
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -40, 0, 25)
+subtitle.Position = UDim2.new(0, 20, 0, 65)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Premium Script v2.0"
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 14
+subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.ZIndex = 2
+subtitle.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(1, -40, 0, 45)
+keyBox.Position = UDim2.new(0, 20, 0, 110)
+keyBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+keyBox.BorderColor3 = Color3.fromRGB(255, 50, 50)
+keyBox.BorderSizePixel = 2
+keyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyBox.PlaceholderText = "Enter key here..."
+keyBox.Font = Enum.Font.Gotham
+keyBox.TextSize = 16
+keyBox.Text = ""
+keyBox.ZIndex = 2
+keyBox.Parent = keyFrame
+Instance.new("UICorner", keyBox).CornerRadius = UDim.new(0, 8)
+
+local errorLabel = Instance.new("TextLabel")
+errorLabel.Size = UDim2.new(1, 0, 0, 20)
+errorLabel.Position = UDim2.new(0, 0, 0, 165)
+errorLabel.BackgroundTransparency = 1
+errorLabel.Text = ""
+errorLabel.Font = Enum.Font.Gotham
+errorLabel.TextSize = 13
+errorLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+errorLabel.ZIndex = 2
+errorLabel.Parent = keyFrame
+
+local submitBtn = Instance.new("TextButton")
+submitBtn.Size = UDim2.new(1, -40, 0, 45)
+submitBtn.Position = UDim2.new(0, 20, 0, 190)
+submitBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+submitBtn.BorderSizePixel = 0
+submitBtn.Text = "SUBMIT KEY"
+submitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitBtn.Font = Enum.Font.GothamBold
+submitBtn.TextSize = 18
+submitBtn.ZIndex = 2
+submitBtn.Parent = keyFrame
+Instance.new("UICorner", submitBtn).CornerRadius = UDim.new(0, 8)
+
+local CorrectKey = "KOGORO-VIP-2025"
+
+local dragging, dragInput, dragStart, startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    keyFrame.Position = UDim2.new(
+        startPos.X.Scale, startPos.X.Offset + delta.X,
+        startPos.Y.Scale, startPos.Y.Offset + delta.Y
+    )
 end
 
-local function isBlacklisted(player)
-    for _, name in ipairs(blacklist) do
-        if name == player.Name then return true end
+keyFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = keyFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
     end
-    return false
-end
+end)
 
-local function toggleBlacklist(name)
-    for i, v in ipairs(blacklist) do
-        if v == name then
-            table.remove(blacklist, i)
-            return false
-        end
+keyFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
     end
-    table.insert(blacklist, name)
-    return true
-end
+end)
 
--- ================== NEW: GET TARGET INSIDE CIRCLE ==================
-local function getBestTargetInFOV()
-    local hrp = getHRP()
-    if not hrp then return nil end
-
-    local bestDist = math.huge
-    local bestHead = nil
-
-    local circleCenter = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
-
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p == lp then continue end
-        if isBlacklisted(p) then continue end
-
-        local char = p.Character
-        if not char then continue end
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hum or hum.Health <= 0 then continue end
-
-        local head = char:FindFirstChild("Head")
-        if not head then continue end
-
-        local screenPos, onScreen = cam:WorldToViewportPoint(head.Position)
-        if not onScreen or screenPos.Z < 0 then continue end
-
-        local distToCenter = (Vector2.new(screenPos.X, screenPos.Y) - circleCenter).Magnitude
-        if distToCenter > FOV_RADIUS then continue end
-
-        -- closest sa loob ng circle
-        local dist = (hrp.Position - head.Position).Magnitude
-        if dist < bestDist then
-            bestDist = dist
-            bestHead = head
-        end
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        updateDrag(input)
     end
-    return bestHead
-end
--- ================================================================
+end)
 
--- ================== FIXED AIMBOT (FOV + Camera Stick) ==================
-local function startAimbot()
-    RunService:UnbindFromRenderStep(AIMBOT_RENDER_NAME)
+local function loadMainCheat()
+    keyGui:Destroy()
     
-    RunService:BindToRenderStep(AIMBOT_RENDER_NAME, Enum.RenderPriority.Camera.Value + 200, function()
-        if not on then return end
-        local target = getBestTargetInFOV()
-        if not target then return end
+    local introGui = Instance.new("ScreenGui")
+    introGui.Name = "IntroLogo"
+    introGui.IgnoreGuiInset = true
+    introGui.ResetOnSpawn = false
+    introGui.Parent = player:WaitForChild("PlayerGui")
 
-        local hrp = getHRP()
-        if hrp then
-            local currentCamPos = cam.CFrame.Position
-            local relativeOffset = currentCamPos - hrp.Position
-            cam.CFrame = CFrame.new(hrp.Position + relativeOffset, target.Position)
+    local logo = Instance.new("ImageLabel")
+    logo.AnchorPoint = Vector2.new(0.5, 0.5)
+    logo.Position = UDim2.new(0.5, 0, 0.5, 0)
+    logo.Size = UDim2.new(0.5, 0, 0.5, 0)
+    logo.BackgroundTransparency = 1
+    logo.Image = "rbxassetid://90293872604973"
+    logo.ImageTransparency = 1
+    logo.Parent = introGui
+
+    TweenService:Create(logo, TweenInfo.new(1), {ImageTransparency = 0}):Play()
+    task.wait(2)
+
+    local fadeOut = TweenService:Create(logo, TweenInfo.new(1), {ImageTransparency = 1})
+    fadeOut:Play()
+    fadeOut.Completed:Connect(function()
+        introGui:Destroy()
+        
+        local mainGui = Instance.new("ScreenGui")
+        mainGui.Name = "KOGORO_MainCheat"
+        mainGui.ResetOnSpawn = false
+        mainGui.Parent = game.CoreGui
+
+        local function setImageBg(parent)
+            local img = Instance.new("ImageLabel", parent)
+            img.Size = UDim2.new(1, 0, 1, 0)
+            img.Image = "rbxassetid://90293872604973"
+            img.ScaleType = Enum.ScaleType.Crop
+            img.BackgroundTransparency = 1
+            img.ImageTransparency = 0.8
+            img.ZIndex = 0
         end
+
+        local main = Instance.new("Frame")
+        main.Size = UDim2.new(0, 750, 0, 450)
+        main.Position = UDim2.new(0.5, -375, 0.5, -225)
+        main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        main.BorderColor3 = Color3.fromRGB(255, 50, 50)
+        main.BorderSizePixel = 3
+        main.Active = true
+        main.Draggable = true
+        main.Parent = mainGui
+        Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+        setImageBg(main)
+
+        local topBar = Instance.new("Frame", main)
+        topBar.Size = UDim2.new(1, 0, 0, 40)
+        topBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+        topBar.BorderSizePixel = 0
+        setImageBg(topBar)
+
+        local titleLabel = Instance.new("TextLabel", topBar)
+        titleLabel.Size = UDim2.new(1, -120, 1, 0)
+        titleLabel.Position = UDim2.new(0, 15, 0, 0)
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Text = "KOGORO MAIN CHEAT"
+        titleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+        titleLabel.Font = Enum.Font.GothamBold
+        titleLabel.TextSize = 20
+        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+        titleLabel.ZIndex = 2
+
+        local closeBtn = Instance.new("TextButton", topBar)
+        closeBtn.Size = UDim2.new(0, 35, 0, 35)
+        closeBtn.Position = UDim2.new(1, -40, 0, 3)
+        closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        closeBtn.Text = "X"
+        closeBtn.TextColor3 = Color3.new(1, 1, 1)
+        closeBtn.Font = Enum.Font.GothamBold
+        closeBtn.TextSize = 18
+        closeBtn.ZIndex = 2
+        Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+        
+        closeBtn.MouseButton1Click:Connect(function()
+            mainGui:Destroy()
+        end)
+
+        local minBtn = Instance.new("TextButton", topBar)
+        minBtn.Size = UDim2.new(0, 35, 0, 35)
+        minBtn.Position = UDim2.new(1, -80, 0, 3)
+        minBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        minBtn.Text = "-"
+        minBtn.TextColor3 = Color3.new(1, 1, 1)
+        minBtn.Font = Enum.Font.GothamBold
+        minBtn.TextSize = 20
+        minBtn.ZIndex = 2
+        Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 6)
+
+        local leftPanel = Instance.new("Frame", main)
+        leftPanel.Size = UDim2.new(0, 220, 1, -40)
+        leftPanel.Position = UDim2.new(0, 0, 0, 40)
+        leftPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+        leftPanel.BorderSizePixel = 0
+        setImageBg(leftPanel)
+
+        local profile = Instance.new("Frame", leftPanel)
+        profile.Size = UDim2.new(1, -10, 0, 80)
+        profile.Position = UDim2.new(0, 5, 0, 5)
+        profile.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        Instance.new("UICorner", profile).CornerRadius = UDim.new(0, 8)
+        profile.ZIndex = 2
+        setImageBg(profile)
+
+        local avatar = Instance.new("ImageLabel", profile)
+        avatar.Size = UDim2.new(0, 60, 0, 60)
+        avatar.Position = UDim2.new(0, 10, 0.5, -30)
+        avatar.BackgroundTransparency = 1
+        local thumb = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+        avatar.Image = thumb
+        avatar.ZIndex = 2
+        Instance.new("UICorner", avatar).CornerRadius = UDim.new(1, 0)
+
+        local nameLabel = Instance.new("TextLabel", profile)
+        nameLabel.Position = UDim2.new(0, 80, 0, 15)
+        nameLabel.Size = UDim2.new(1, -90, 0, 25)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Text = LocalPlayer.Name
+        nameLabel.TextColor3 = Color3.new(1, 1, 1)
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextSize = 14
+        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+        nameLabel.ZIndex = 2
+
+        local statusLabel = Instance.new("TextLabel", profile)
+        statusLabel.Position = UDim2.new(0, 80, 0, 45)
+        statusLabel.Size = UDim2.new(1, -90, 0, 20)
+        statusLabel.BackgroundTransparency = 1
+        statusLabel.Text = "🟢 Online"
+        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+        statusLabel.TextSize = 11
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+        statusLabel.ZIndex = 2
+
+        local tabScroll = Instance.new("ScrollingFrame", leftPanel)
+        tabScroll.Size = UDim2.new(1, -10, 1, -95)
+        tabScroll.Position = UDim2.new(0, 5, 0, 90)
+        tabScroll.CanvasSize = UDim2.new(0, 0, 0, 400)
+        tabScroll.BackgroundTransparency = 1
+        tabScroll.ScrollBarThickness = 4
+        tabScroll.ZIndex = 2
+
+        local tabLayout = Instance.new("UIListLayout", tabScroll)
+        tabLayout.Padding = UDim.new(0, 6)
+
+        local rightPanel = Instance.new("Frame", main)
+        rightPanel.Size = UDim2.new(1, -220, 1, -40)
+        rightPanel.Position = UDim2.new(0, 220, 0, 40)
+        rightPanel.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+        rightPanel.BorderSizePixel = 0
+        setImageBg(rightPanel)
+
+        local rightScroll = Instance.new("ScrollingFrame", rightPanel)
+        rightScroll.Size = UDim2.new(1, -10, 1, -10)
+        rightScroll.Position = UDim2.new(0, 5, 0, 5)
+        rightScroll.CanvasSize = UDim2.new(0, 0, 0, 600)
+        rightScroll.BackgroundTransparency = 1
+        rightScroll.ScrollBarThickness = 4
+        rightScroll.ZIndex = 2
+
+        local btnLayout = Instance.new("UIListLayout", rightScroll)
+        btnLayout.Padding = UDim.new(0, 8)
+        btnLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+        local tabs = {
+            ["MAIN MENU"] = {
+                "BIG HEAD",
+                "HITBOX EXTENDER",
+                "ESP PLAYER",
+                "SPEED HACK",
+                "FLY HACK"
+            },
+            ["COMBAT"] = {
+                "AIMBOT",
+                "SILENT AIM"
+            }
+        }
+
+        local function clearButtons()
+            for _, child in pairs(rightScroll:GetChildren()) do
+                if child:IsA("TextButton") then child:Destroy() end
+            end
+        end
+
+        local clickSound = Instance.new("Sound")
+        clickSound.SoundId = "rbxassetid://6895079853"
+        clickSound.Volume = 0.5
+        clickSound.Parent = mainGui
+
+        local function createButtons(buttonList)
+            clearButtons()
+            for _, text in ipairs(buttonList) do
+                local btn = Instance.new("TextButton", rightScroll)
+                btn.Size = UDim2.new(0.95, 0, 0, 38)
+                btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+                btn.BorderColor3 = Color3.fromRGB(255, 50, 50)
+                btn.BorderSizePixel = 2
+                btn.Text = text
+                btn.TextColor3 = Color3.new(1, 1, 1)
+                btn.Font = Enum.Font.GothamBold
+                btn.TextSize = 14
+                btn.ZIndex = 2
+                Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+                btn.MouseButton1Click:Connect(function()
+                    clickSound:Play()
+                    print("Feature activated: " .. text)
+                end)
+            end
+        end
+
+        for tabName, buttonList in pairs(tabs) do
+            local tab = Instance.new("TextButton", tabScroll)
+            tab.Size = UDim2.new(1, -5, 0, 35)
+            tab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            tab.Text = tabName
+            tab.ZIndex = 2
+            Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 6)
+
+            tab.MouseButton1Click:Connect(function()
+                createButtons(buttonList)
+            end)
+        end
+
+        createButtons(tabs["MAIN MENU"])
     end)
 end
 
-local function stopAimbot()
-    RunService:UnbindFromRenderStep(AIMBOT_RENDER_NAME)
-end
--- =====================================================================
-
--- ============================================================
--- UI + FOV CIRCLE
--- ============================================================
-
-local T = {
-    Bg     = Color3.fromRGB(10, 11, 17),
-    Card   = Color3.fromRGB(18, 19, 28),
-    Card2  = Color3.fromRGB(22, 24, 36),
-    Border = Color3.fromRGB(36, 38, 56),
-    Accent = Color3.fromRGB(80, 130, 255),
-    AccentD= Color3.fromRGB(50, 90, 200),
-    Green  = Color3.fromRGB(55, 215, 115),
-    Red    = Color3.fromRGB(255, 65, 80),
-    Text   = Color3.fromRGB(220, 224, 242),
-    Dim    = Color3.fromRGB(95, 102, 135),
-    Muted  = Color3.fromRGB(42, 46, 66),
-}
-
-local function Tw(o, p, d)
-    TweenService:Create(o, TweenInfo.new(d or 0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), p):Play()
-end
-
-local function Corner(p, r)
-    local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, r or 8); c.Parent = p
-end
-
-local function Stroke(p, col, th)
-    local s = Instance.new("UIStroke"); s.Color = col or T.Border; s.Thickness = th or 1
-    s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border; s.Parent = p; return s
-end
-
-local function Lbl(props, parent)
-    local l = Instance.new("TextLabel"); l.BackgroundTransparency = 1
-    for k, v in pairs(props) do l[k] = v end; l.Parent = parent; return l
-end
-
-local sg = Instance.new("ScreenGui")
-sg.Name = "MobileFOVAimbot"; sg.ResetOnSpawn = false
-sg.IgnoreGuiInset = true; sg.DisplayOrder = 999
-pcall(function() sg.Parent = game:GetService("CoreGui") end)
-if not sg.Parent then sg.Parent = lp.PlayerGui end
-
--- ================== FOV CIRCLE (BILOG SA GITNA) ==================
-local fovCircle = Instance.new("Frame")
-fovCircle.Name = "FOVCircle"
-fovCircle.Size = UDim2.fromOffset(FOV_RADIUS * 2, FOV_RADIUS * 2)
-fovCircle.Position = UDim2.new(0.5, -FOV_RADIUS, 0.5, -FOV_RADIUS)
-fovCircle.BackgroundTransparency = 1
-fovCircle.BorderSizePixel = 0
-fovCircle.ZIndex = 100
-fovCircle.Visible = false
-fovCircle.Parent = sg
-
-local circleCorner = Instance.new("UICorner")
-circleCorner.CornerRadius = UDim.new(0.5, 0)
-circleCorner.Parent = fovCircle
-
-local circleStroke = Instance.new("UIStroke")
-circleStroke.Color = T.Accent
-circleStroke.Thickness = 2.5
-circleStroke.Transparency = 0.3
-circleStroke.Parent = fovCircle
--- =================================================================
-
--- MAIN WINDOW (same)
-local win = Instance.new("Frame")
-win.Size = UDim2.new(0, 210, 0, 120)
-win.Position = UDim2.new(0, 20, 0, 80)
-win.BackgroundColor3 = T.Bg
-win.BorderSizePixel = 0
-win.Active = true; win.Draggable = true; win.Parent = sg
-Corner(win, 12); Stroke(win, T.Border)
-
-local strip = Instance.new("Frame")
-strip.Size = UDim2.new(1,0,0,3); strip.BackgroundColor3 = T.Accent
-strip.BorderSizePixel = 0; strip.ZIndex = 2; strip.Parent = win; Corner(strip, 2)
-Instance.new("UIGradient", strip).Color = ColorSequence.new(T.Accent, Color3.fromRGB(180,70,255))
-
-local dot = Instance.new("Frame")
-dot.Size = UDim2.new(0,8,0,8); dot.Position = UDim2.new(0,12,0,16)
-dot.BackgroundColor3 = T.Dim; dot.BorderSizePixel = 0; dot.ZIndex = 2; dot.Parent = win
-Corner(dot, 4)
-
-Lbl({ Size=UDim2.new(1,-28,0,18), Position=UDim2.new(0,26,0,11),
-    Text="Mobile FOV Aimbot", TextColor3=T.Text,
-    Font=Enum.Font.GothamBold, TextSize=13,
-    TextXAlignment=Enum.TextXAlignment.Left, ZIndex=2 }, win)
-
-local statusCard = Instance.new("Frame")
-statusCard.Size = UDim2.new(1,-24,0,26)
-statusCard.Position = UDim2.new(0,12,0,38)
-statusCard.BackgroundColor3 = T.Card; statusCard.BorderSizePixel = 0
-statusCard.ZIndex = 2; statusCard.Parent = win; Corner(statusCard, 6); Stroke(statusCard, T.Border)
-
-local statusLbl = Lbl({ Size=UDim2.new(1,-10,1,0), Position=UDim2.new(0,8,0,0),
-    Text="Idle", TextColor3=T.Dim, Font=Enum.Font.Gotham, TextSize=11,
-    TextXAlignment=Enum.TextXAlignment.Left, ZIndex=3 }, statusCard)
-
-local btn = Instance.new("TextButton")
-btn.Size = UDim2.new(1,-24,0,36); btn.Position = UDim2.new(0,12,0,72)
-btn.BackgroundColor3 = T.AccentD; btn.Text = "▶  ENABLE"
-btn.TextColor3 = T.Text; btn.Font = Enum.Font.GothamBold; btn.TextSize = 14
-btn.AutoButtonColor = false; btn.BorderSizePixel = 0; btn.ZIndex = 2; btn.Parent = win
-Corner(btn, 9)
-local btnGrad = Instance.new("UIGradient")
-btnGrad.Color = ColorSequence.new(T.Accent, T.AccentD); btnGrad.Rotation = 135; btnGrad.Parent = btn
-
--- PLAYER LIST WINDOW (same)
-local listWin = Instance.new("Frame")
-listWin.Size = UDim2.new(0, 170, 0, 30)
-listWin.Position = UDim2.new(0, 240, 0, 80)
-listWin.BackgroundColor3 = T.Bg
-listWin.BorderSizePixel = 0
-listWin.Active = true; listWin.Draggable = true; listWin.Parent = sg
-listWin.ClipsDescendants = true
-Corner(listWin, 10); Stroke(listWin, T.Border)
-
-local listHeader = Instance.new("Frame")
-listHeader.Size = UDim2.new(1,0,0,30)
-listHeader.BackgroundColor3 = T.Card
-listHeader.BorderSizePixel = 0; listHeader.ZIndex = 2; listHeader.Parent = listWin
-Corner(listHeader, 10)
-
-local lhFix = Instance.new("Frame")
-lhFix.Size = UDim2.new(1,0,0,10); lhFix.Position = UDim2.new(0,0,1,-10)
-lhFix.BackgroundColor3 = T.Card; lhFix.BorderSizePixel = 0; lhFix.ZIndex = 2; lhFix.Parent = listHeader
-
-Lbl({ Size=UDim2.new(1,-60,1,0), Position=UDim2.new(0,10,0,0),
-    Text="Blacklist", TextColor3=T.Text, Font=Enum.Font.GothamBold, TextSize=12,
-    TextXAlignment=Enum.TextXAlignment.Left, ZIndex=3 }, listHeader)
-
-local minimizeBtn = Instance.new("TextButton")
-minimizeBtn.Size = UDim2.new(0,50,0,22); minimizeBtn.Position = UDim2.new(1,-58,0.5,-11)
-minimizeBtn.BackgroundColor3 = T.Muted; minimizeBtn.Text = "▾ Hide"
-minimizeBtn.TextColor3 = T.Dim; minimizeBtn.Font = Enum.Font.GothamBold; minimizeBtn.TextSize = 10
-minimizeBtn.AutoButtonColor = false; minimizeBtn.BorderSizePixel = 0; minimizeBtn.ZIndex = 3; minimizeBtn.Parent = listHeader
-Corner(minimizeBtn, 5)
-
-local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1,0,1,-32); scroll.Position = UDim2.new(0,0,0,32)
-scroll.BackgroundTransparency = 1; scroll.BorderSizePixel = 0
-scroll.ScrollBarThickness = 3; scroll.ScrollBarImageColor3 = T.Accent
-scroll.CanvasSize = UDim2.new(0,0,0,0); scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-scroll.ZIndex = 2; scroll.Parent = listWin
-Instance.new("UIListLayout", scroll).Padding = UDim.new(0,2)
-local scrollPad = Instance.new("UIPadding", scroll)
-scrollPad.PaddingTop = UDim.new(0,4); scrollPad.PaddingLeft = UDim.new(0,6); scrollPad.PaddingRight = UDim.new(0,6)
-
-local LIST_FULL_H = 180
-
-minimizeBtn.MouseButton1Click:Connect(function()
-    listMinimized = not listMinimized
-    if listMinimized then
-        Tw(listWin, { Size = UDim2.new(0,170,0,30) }, 0.25)
-        minimizeBtn.Text = "▸ Show"
+submitBtn.MouseButton1Click:Connect(function()
+    local entered = keyBox.Text
+    if entered == CorrectKey then
+        errorLabel.Text = "✓ Correct!"
+        loadMainCheat()
     else
-        Tw(listWin, { Size = UDim2.new(0,170,0,LIST_FULL_H) }, 0.3)
-        minimizeBtn.Text = "▾ Hide"
+        errorLabel.Text = "✗ Wrong key!"
     end
 end)
 
-local playerRows = {}
-
-local function buildPlayerList()
-    for _, r in ipairs(playerRows) do pcall(function() r:Destroy() end) end
-    playerRows = {}
-
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p == lp then continue end
-
-        local isListed = isBlacklisted(p)
-        local row = Instance.new("TextButton")
-        row.Size = UDim2.new(1,0,0,28)
-        row.BackgroundColor3 = isListed and Color3.fromRGB(50,20,20) or T.Card2
-        row.Text = ""; row.AutoButtonColor = false; row.BorderSizePixel = 0
-        row.ZIndex = 3; row.Parent = scroll
-        Corner(row, 6)
-        if isListed then Stroke(row, T.Red, 1) else Stroke(row, T.Border, 1) end
-
-        local nameLbl = Lbl({Size = UDim2.new(1,-36,1,0), Position = UDim2.new(0,8,0,0),
-            Text = p.Name, TextColor3 = isListed and T.Red or T.Text,
-            Font = Enum.Font.Gotham, TextSize = 11,
-            TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4}, row)
-
-        local badge = Lbl({Size = UDim2.new(0,28,0,18), Position = UDim2.new(1,-32,0.5,-9),
-            Text = isListed and "BL" or "OK",
-            TextColor3 = isListed and T.Red or T.Green,
-            Font = Enum.Font.GothamBold, TextSize = 9, ZIndex = 4}, row)
-
-        row.MouseButton1Click:Connect(function()
-            local added = toggleBlacklist(p.Name)
-            row.BackgroundColor3 = added and Color3.fromRGB(50,20,20) or T.Card2
-            nameLbl.TextColor3   = added and T.Red or T.Text
-            badge.Text           = added and "BL" or "OK"
-            badge.TextColor3     = added and T.Red or T.Green
-        end)
-
-        table.insert(playerRows, row)
-    end
-end
-
-Players.PlayerAdded:Connect(function() task.wait(0.5); buildPlayerList() end)
-Players.PlayerRemoving:Connect(function() task.wait(0.5); buildPlayerList() end)
-buildPlayerList()
-
-task.delay(0.1, function()
-    Tw(listWin, { Size = UDim2.new(0,170,0,LIST_FULL_H) }, 0.3)
-end)
-
--- ================== TOGGLE LOGIC (may circle) ==================
-btn.MouseButton1Click:Connect(function()
-    on = not on
-    if on then
-        startAimbot()
-        fovCircle.Visible = true
-        btn.Text = "⏹  DISABLE"
-        btnGrad.Color = ColorSequence.new(T.Red, Color3.fromRGB(170,35,50))
-        Tw(btn, { BackgroundColor3 = Color3.fromRGB(170,35,50) }, 0.2)
-        dot.BackgroundColor3 = T.Green
-    else
-        stopAimbot()
-        fovCircle.Visible = false
-        btn.Text = "▶  ENABLE"
-        btnGrad.Color = ColorSequence.new(T.Accent, T.AccentD)
-        Tw(btn, { BackgroundColor3 = T.AccentD }, 0.2)
-        dot.BackgroundColor3 = T.Dim
-        statusLbl.Text = "Idle"; statusLbl.TextColor3 = T.Dim
-    end
-end)
-
--- Status updater
-RunService.RenderStepped:Connect(function()
-    if not on then return end
-    local t = getBestTargetInFOV()
-    if t then
-        statusLbl.Text = "→ " .. t.Parent.Name
-        statusLbl.TextColor3 = T.Green
-    else
-        statusLbl.Text = "No target in FOV"
-        statusLbl.TextColor3 = T.Dim
-    end
-end)
+print("Script Loaded!")
